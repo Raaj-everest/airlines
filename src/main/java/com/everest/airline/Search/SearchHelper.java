@@ -11,11 +11,10 @@ import java.util.stream.Collectors;
 
 public class SearchHelper {
 
-    public static List<Flight> sourceToDestination(String from, String to, LocalDate departureDate) {
-
+    public static List<Flight> sourceToDestination(String from, String to, LocalDate departureDate, Integer ticket) {
         List<Flight> searched = new ArrayList<>();
         searched = Data.flights.stream()
-                .filter(flight -> (flight.getSource().equals(from) && flight.getDestination().equals(to) && flight.getDepartureDate().equals(departureDate)))
+                .filter(flight -> (flight.getSource().equals(from) && flight.getDestination().equals(to) && flight.getDepartureDate().equals(departureDate) && (ticket <= (flight.getAvailableSeats()))))
                 .collect(Collectors.toList());
         return searched;
     }

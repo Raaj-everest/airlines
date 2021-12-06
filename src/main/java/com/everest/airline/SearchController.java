@@ -16,8 +16,8 @@ public class SearchController {
     }
 
     @RequestMapping(value = "/search")
-    public String search(String from, String to,String departureDate, Model model) {
-        model.addAttribute("flights",SearchHelper.sourceToDestination(from,to,LocalDate.parse(departureDate)) );
+    public String search(String from, String to, String ticket, String departureDate, Model model) {
+        model.addAttribute("flights", SearchHelper.sourceToDestination(from, to, LocalDate.parse(departureDate), Integer.valueOf(ticket)));
         return "search";
     }
 }
