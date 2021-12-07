@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import java.io.FileNotFoundException;
 import java.time.LocalDate;
 
+import static com.everest.airline.Data.writeToFile;
+
 @Controller
 public class SearchController {
 
@@ -19,6 +21,7 @@ public class SearchController {
     @RequestMapping(value = "/search")
     public String search(String from, String to, String ticket, String departureDate, Model model) throws FileNotFoundException {
         model.addAttribute("flights", SearchHelper.sourceToDestination(from, to, LocalDate.parse(departureDate), Integer.valueOf(ticket)));
+        writeToFile(from, to, LocalDate.parse(departureDate), Integer.valueOf(ticket));
         return "search";
     }
 }

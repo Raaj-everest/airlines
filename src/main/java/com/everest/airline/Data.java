@@ -1,8 +1,6 @@
 package com.everest.airline;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
+import java.io.*;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.ArrayList;
@@ -25,7 +23,7 @@ public class Data {
         List<Flight> flightsFromFile = new ArrayList<>();
         String flightData;
         while (in.hasNextLine()) {
-            flightData = in.next();
+            flightData = in.nextLine();
             String[] flight = flightData.split(",");
             int flightNumber = Integer.parseInt(flight[0]);
             String source = flight[1];
@@ -38,5 +36,40 @@ public class Data {
             flightsFromFile.add(new Flight(flightNumber, source, destination, LocalDate.of(year, month, day), occupiedSeats));
         }
         return flightsFromFile;
+    }
+    public static void writeToFile(String from, String to, LocalDate departureDate, Integer ticket) {
+        try {
+            List<Flight> ff = Data.readDataFromFile();
+            for (Flight flight:ff
+                 ) {
+                if (flight.getSource().equals(from) && flight.getDestination().equals(to) && flight.getDepartureDate().equals(departureDate) && (ticket <= (flight.getAvailableSeats()))){
+                    flight.setOccupiedSeats(ticket);
+                }
+            }
+            FileWriter myWriter = new FileWriter("/Users/raaj/projects/airlines/src/main/java/com/everest/airline/data.txt");
+            for (Flight f:
+                    ff ) {
+                myWriter.write(String.valueOf(f.getNumber()));
+                myWriter.write(",");
+                myWriter.write(f.getSource());
+                myWriter.write(",");
+                myWriter.write(f.getDestination());
+                myWriter.write(",");
+                myWriter.write(String.valueOf(f.getDepartureDate().getYear()));
+                myWriter.write("-");
+                myWriter.write(String.valueOf(f.getDepartureDate().getMonthValue()));
+                myWriter.write("-");
+                myWriter.write(String.valueOf(f.getDepartureDate().getDayOfMonth()));
+                myWriter.write(",");
+                myWriter.write(String.valueOf(f.getOccupiedSeats()));
+                myWriter.write("\n");
+            }
+            myWriter.close();
+            System.out.println("Successfully wrote to the file.");
+        } catch (IOException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }
+
     }
 }

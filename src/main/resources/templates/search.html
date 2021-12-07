@@ -21,6 +21,9 @@
             <td th:text="${flight.destination}"></td>
             <td th:text="${flight.departureDate}"></td>
             <td th:text="${flight.availableSeats}"></td>
+            <td>
+                <a th:href="@{'/' + ${flight.number}}">Book Ticket</a>
+            </td>
         </tr>
     </table>
 </body>

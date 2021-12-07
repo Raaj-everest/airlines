@@ -47,4 +47,10 @@ public class Flight {
     public int getAvailableSeats() {
         return availableSeats;
     }
+
+    public void setOccupiedSeats(int occupiedSeats) {
+        if(occupiedSeats<=capacity) {
+            this.occupiedSeats += occupiedSeats;
+        }
+    }
 }
