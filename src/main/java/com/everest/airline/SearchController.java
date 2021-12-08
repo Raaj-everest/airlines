@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.everest.airline.Data.readDataFromFile;
@@ -25,14 +26,23 @@ public class SearchController {
     @RequestMapping(value = "/search")
     public String search(String from, String to, String ticket, String departureDate, Model model) throws FileNotFoundException {
         model.addAttribute("flights", SearchHelper.sourceToDestination(from, to, LocalDate.parse(departureDate), Integer.valueOf(ticket)));
-//        writeToFile(from, to, LocalDate.parse(departureDate), Integer.valueOf(ticket));
         return "search";
     }
     @RequestMapping(value = "/{number}")
     public String book(@PathVariable("number") long number,Model model) throws IOException {
         System.out.println(number);
-        model.addAttribute("flights", readDataFromFile().stream().filter(f-> (f.getNumber()==number)).collect(Collectors.toList()));
-//        writeToFile(from, to, LocalDate.parse(departureDate), Integer.valueOf(ticket));
-        return "book";
+        List<Flight> flightNumber = readDataFromFile().stream().filter(f-> (f.getNumber()==number)).collect(Collectors.toList());
+        model.addAttribute("flights", flightNumber);
+        readDataFromFile();
+
+        return "redirect:/{number}/book";
+    }
+
+    @RequestMapping(value = "/{number}/book")
+    public String bookTicket(@PathVariable("number") long number, Model model) throws FileNotFoundException {
+        List<Flight> flights = readDataFromFile().stream().filter(f-> (f.getNumber()==number)&& (f.getAvailableSeats()!=0)).collect(Collectors.toList());
+        model.addAttribute("flights",flights);
+        writeToFile(number);
+        return "search";
     }
 }

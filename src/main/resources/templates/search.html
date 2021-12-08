@@ -8,6 +8,7 @@
 
 <body>
     <h1>Airline application</h1>
+
     <table border="1">
         <th>Number</th>
         <th>From</th>
@@ -22,10 +23,13 @@
             <td th:text="${flight.departureDate}"></td>
             <td th:text="${flight.availableSeats}"></td>
             <td>
-                <a th:href="@{'/' + ${flight.number}}">Book Ticket</a>
+                <form action="#" th:action="@{'/'+${flight.number}}" th:object="${bookForm}" method="post">
+                    <input type="submit" value="Book Ticket" />
+                </form>
             </td>
         </tr>
     </table>
+
 </body>
 
 </html>

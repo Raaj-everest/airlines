@@ -7,7 +7,7 @@ public class Flight {
     private String source;
     private String destination;
     private LocalDate departureDate;
-    private final int capacity = 10;
+    private final int capacity = 100;
     private int occupiedSeats=0;
     private int availableSeats=0;
 
@@ -48,9 +48,9 @@ public class Flight {
         return availableSeats;
     }
 
-    public void setOccupiedSeats(int occupiedSeats) {
+    public void setOccupiedSeats() {
         if(occupiedSeats<=capacity) {
-            this.occupiedSeats += occupiedSeats;
+            this.occupiedSeats += 1;
         }
     }
 }

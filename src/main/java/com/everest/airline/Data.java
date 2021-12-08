@@ -37,13 +37,13 @@ public class Data {
         }
         return flightsFromFile;
     }
-    public static void writeToFile(String from, String to, LocalDate departureDate, Integer ticket) {
+    public static void writeToFile(long number) {
         try {
             List<Flight> ff = Data.readDataFromFile();
             for (Flight flight:ff
                  ) {
-                if (flight.getSource().equals(from) && flight.getDestination().equals(to) && flight.getDepartureDate().equals(departureDate) && (ticket <= (flight.getAvailableSeats()))){
-                    flight.setOccupiedSeats(ticket);
+                if (flight.getNumber()==number){
+                    flight.setOccupiedSeats();
                 }
             }
             FileWriter myWriter = new FileWriter("/Users/raaj/projects/airlines/src/main/java/com/everest/airline/data.txt");
