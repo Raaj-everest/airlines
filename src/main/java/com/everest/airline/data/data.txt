@@ -4,3 +4,6 @@
 1004,Bangalore,Goa,2021-12-9,100,8
 1005,Bangalore,Hyderabad,2021-12-12,100,12
 1006,Hyderabad,Bangalore,2021-12-6,100,49
+
+
+this is given data but right now i am not using it here,instead i am using data from the flights folder.

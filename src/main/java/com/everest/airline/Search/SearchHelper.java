@@ -1,14 +1,13 @@
 package com.everest.airline.Search;
 
-import com.everest.airline.Flight;
+import com.everest.airline.model.Flight;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.everest.airline.Data.readFromFiles;
+import static com.everest.airline.data.DataReader.readFromFiles;
 
 public class SearchHelper {
 

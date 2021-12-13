@@ -1,21 +1,23 @@
-package com.everest.airline;
+package com.everest.airline.controllers;
 
 import com.everest.airline.Search.SearchHelper;
+import com.everest.airline.model.Flight;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.everest.airline.Data.*;
+import static com.everest.airline.data.DataReader.readFromFiles;
+import static com.everest.airline.data.DataWriter.writingToFiles;
 
 @Controller
 public class SearchController {
+
     public static List<Flight> searchedFlights;
     private String from;
     private String to;
@@ -24,23 +26,13 @@ public class SearchController {
     private String classType;
 
 
-    @RequestMapping(value = "/")
-    public String home() {
-        return "home";
-    }
-
     @RequestMapping(value = "/search")
-    public String search(String from, String to, String departureDate, String ticket,String classType, Model model) throws IOException {
+    public String search(String from, String to, String departureDate, String ticket, String classType, Model model) throws IOException {
         if (from != null) {
-            this.from = from;
-            this.to = to;
-            this.departureDate = departureDate;
-            this.ticket = ticket;
-            this.classType=classType;
+            setValues(from,to,departureDate,ticket,classType);
         }
-        System.out.println(classType);
         searchedFlights = SearchHelper.sourceToDestination(this.from, this.to, LocalDate.parse(this.departureDate), Integer.valueOf(this.ticket));
-        if(searchedFlights.size()==0){
+        if (searchedFlights.size() == 0) {
             return "noFlights";
         }
         model.addAttribute("flights", searchedFlights);
@@ -49,9 +41,17 @@ public class SearchController {
 
     @RequestMapping(value = "/{number}")
     public String book(@PathVariable("number") String number, Model model) throws IOException {
-        List<Flight> flights = readFromFiles().stream().filter(f -> f.getNumber()==Integer.parseInt(number)).collect(Collectors.toList());
-                flights.get(0).setOccupiedSeats();
-                writingToFiles(flights.get(0));
+        List<Flight> flights = readFromFiles().stream().filter(f -> f.getNumber() == Integer.parseInt(number)).collect(Collectors.toList());
+        flights.get(0).setOccupiedSeats();
+        writingToFiles(flights.get(0));
         return "redirect:search";
+    }
+
+    public void setValues(String from, String to, String departureDate, String ticket, String classType){
+        this.from = from;
+        this.to = to;
+        this.departureDate = departureDate;
+        this.ticket = ticket;
+        this.classType = classType;
     }
 }
