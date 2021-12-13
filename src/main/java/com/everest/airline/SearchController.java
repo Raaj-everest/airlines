@@ -10,9 +10,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
-import static com.everest.airline.Data.readDataFromFile;
-import static com.everest.airline.Data.writeToFile;
+import static com.everest.airline.Data.*;
 
 @Controller
 public class SearchController {
@@ -30,7 +30,7 @@ public class SearchController {
     }
 
     @RequestMapping(value = "/search")
-    public String search(String from, String to, String departureDate, String ticket,String classType, Model model) throws FileNotFoundException {
+    public String search(String from, String to, String departureDate, String ticket,String classType, Model model) throws IOException {
         if (from != null) {
             this.from = from;
             this.to = to;
@@ -49,13 +49,9 @@ public class SearchController {
 
     @RequestMapping(value = "/{number}")
     public String book(@PathVariable("number") String number, Model model) throws IOException {
-        List<Flight> flights = readDataFromFile();
-        for (Flight flight : flights) {
-            if (flight.getNumber() == Integer.parseInt(number)) {
-                flight.setOccupiedSeats();
-            }
-        }
-        writeToFile(flights);
+        List<Flight> flights = readFromFiles().stream().filter(f -> f.getNumber()==Integer.parseInt(number)).collect(Collectors.toList());
+                flights.get(0).setOccupiedSeats();
+                writingToFiles(flights.get(0));
         return "redirect:search";
     }
 }

@@ -22,7 +22,7 @@
             <td th:text="${flight.source}"></td>
             <td th:text="${flight.destination}"></td>
             <td th:text="${flight.departureDate}"></td>
-            <td th:text="${flight.availableSeats}"></td>
+            <td th:text="${flight.totalAvailableSeats}"></td>
             <td>
                 <form action="#" th:action="@{'/'+${flight.number}}" th:object="${bookForm}" method="post">
                     <input type="submit" value="Book Ticket"/>

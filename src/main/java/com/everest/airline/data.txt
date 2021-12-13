@@ -1,6 +1,6 @@
-1001,Hyderabad,Bangalore,2021-12-6,64
-1002,Bangalore,Hyderabad,2021-12-7,8
-1003,Goa,Bangalore,2021-12-8,7
-1004,Bangalore,Goa,2021-12-9,6
-1005,Bangalore,Hyderabad,2021-12-10,9
-1006,Hyderabad,Bangalore,2021-12-6,16
+1001,Hyderabad,Bangalore,2021-12-6,100,67
+1002,Bangalore,Hyderabad,2021-12-7,100,8
+1003,Goa,Bangalore,2021-12-8,100,8
+1004,Bangalore,Goa,2021-12-9,100,8
+1005,Bangalore,Hyderabad,2021-12-12,100,12
+1006,Hyderabad,Bangalore,2021-12-6,100,49
