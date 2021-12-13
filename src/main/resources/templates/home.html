@@ -7,26 +7,35 @@
 </head>
 
 <body>
-    <h1>Airline application</h1>
-    <form action="#" th:action="@{/search}" th:object="${searchForm}" method="post">
-        <label for="from">From</label>
-        <input id="from" name="from" required="required" />
-        <br />
-        <br />
-        <label to="to">To</label>
-        <input id="to" name="to" required="required" />
-        <br />
-        <br />
-        <label ticket="ticket">Number of tickets</label>
-        <input id="ticket" name="ticket" type="number" required="required" />
-        <br />
-        <br />
-        <label departureDate="to">Departure date</label>
-        <input id="date" name="departureDate" placeholder="dd/mm/year" type="date" required="required" />
-        <br />
-        <br />
-        <input type="submit" value="Search" />
-    </form>
+<h1>Airline application</h1>
+<form action="#" th:action="@{/search}" th:object="${searchForm}" method="post">
+    <label for="From">From</label>
+    <input id="from" name="from" required="required"/>
+    <br/>
+    <br/>
+    <label to="to">To</label>
+    <input id="to" name="to" required="required"/>
+    <br/>
+    <br/>
+    <label ticket="ticket">Number of passengers</label>
+    <input id="ticket" name="ticket" type="number" required="required"/>
+    <br/>
+    <br/>
+    <label departureDate="departureDate">Departure date</label>
+    <input id="departureDate" name="departureDate" placeholder="dd/mm/year" type="date" required="required"/>
+    <br/>
+    <br/>
+    <label ClassType="ClassType">Class</label>
+    <select name="classType" id="classType">
+        <option value="Any class" >Any class</option>
+        <option value="Economic" >Economic</option>
+        <option value="First" >First</option>
+        <option value="Second" >Second</option>
+    </select>
+    <br/>
+    <br/>
+    <input type="submit" value="Search"/>
+</form>
 </body>
 
 </html>

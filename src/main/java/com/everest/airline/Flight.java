@@ -8,6 +8,9 @@ public class Flight {
     private String destination;
     private LocalDate departureDate;
     private final int capacity = 100;
+    private int occupiedEconomicSeats;
+    private int occupiedFirstClassSeats;
+    private int occupiedSecondClassSeats;
     private int occupiedSeats=0;
     private int availableSeats=0;
 

@@ -15,6 +15,7 @@
         <th>To</th>
         <th>Departure Date</th>
         <th>Available Seats</th>
+        <th>Booking</th>
 
         <tr th:each="flight:${flights}">
             <td th:text="${flight.number}"></td>
@@ -24,7 +25,7 @@
             <td th:text="${flight.availableSeats}"></td>
             <td>
                 <form action="#" th:action="@{'/'+${flight.number}}" th:object="${bookForm}" method="post">
-                    <input type="submit" value="Book Ticket" />
+                    <input type="submit" value="Book Ticket"/>
                 </form>
             </td>
         </tr>
