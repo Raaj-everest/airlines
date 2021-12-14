@@ -22,16 +22,16 @@ public class SearchController {
     private String from;
     private String to;
     private String departureDate;
-    private String ticket;
+    private int NUmberOfPassengersBoarding;
     private String classType;
 
 
     @RequestMapping(value = "/search")
-    public String search(String from, String to, String departureDate, String ticket, String classType, Model model) throws IOException {
+    public String search(String from, String to, String departureDate, String numberOfPassengersBoarding, String classType, Model model) throws IOException {
         if (from != null) {
-            setValues(from,to,departureDate,ticket,classType);
+            setValues(from,to,departureDate,numberOfPassengersBoarding,classType);
         }
-        searchedFlights = SearchHelper.sourceToDestination(this.from, this.to, LocalDate.parse(this.departureDate), Integer.valueOf(this.ticket));
+        searchedFlights = SearchHelper.sourceToDestination(this.from, this.to, LocalDate.parse(this.departureDate), Integer.valueOf(this.NUmberOfPassengersBoarding));
         if (searchedFlights.size() == 0) {
             return "noFlights";
         }
@@ -42,16 +42,16 @@ public class SearchController {
     @RequestMapping(value = "/{number}")
     public String book(@PathVariable("number") String number, Model model) throws IOException {
         List<Flight> flights = readFromFiles().stream().filter(f -> f.getNumber() == Integer.parseInt(number)).collect(Collectors.toList());
-        flights.get(0).setOccupiedSeats();
+        flights.get(0).updateEconomicOccupiedSeats(this.NUmberOfPassengersBoarding);
         writingToFiles(flights.get(0));
         return "redirect:search";
     }
 
-    public void setValues(String from, String to, String departureDate, String ticket, String classType){
+    public void setValues(String from, String to, String departureDate, String numberOfPassengersBoarding, String classType){
         this.from = from;
         this.to = to;
         this.departureDate = departureDate;
-        this.ticket = ticket;
+        this.NUmberOfPassengersBoarding = Integer.parseInt(numberOfPassengersBoarding);
         this.classType = classType;
     }
 }

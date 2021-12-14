@@ -1,1 +1,1 @@
-1005,Bangalore,Hyderabad,2021-12-12,100,12
+1005,Bangalore,Hyderabad,2021-12-12,100,100,100,0,0,0

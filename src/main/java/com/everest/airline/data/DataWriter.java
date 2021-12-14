@@ -28,9 +28,17 @@ public class DataWriter {
         myWriter.write("-");
         myWriter.write(String.valueOf(flight.getDepartureDate().getDayOfMonth()));
         myWriter.write(",");
-        myWriter.write(String.valueOf(flight.getCapacity()));
+        myWriter.write(String.valueOf(flight.getEconomyClassCapacity()));
         myWriter.write(",");
-        myWriter.write(String.valueOf(flight.getTotalOccupiedSeats()));
+        myWriter.write(String.valueOf(flight.getFirstClassCapacity()));
+        myWriter.write(",");
+        myWriter.write(String.valueOf(flight.getSecondClassCapacity()));
+        myWriter.write(",");
+        myWriter.write(String.valueOf(flight.getOccupiedEconomicSeats()));
+        myWriter.write(",");
+        myWriter.write(String.valueOf(flight.getOccupiedFirstClassSeats()));
+        myWriter.write(",");
+        myWriter.write(String.valueOf(flight.getOccupiedSecondClassSeats()));
         myWriter.write("\n");
         myWriter.close();
     }
