@@ -36,7 +36,10 @@ public class DataReader {
             int occupiedEconomicSeats = Integer.parseInt(flight[7]);
             int occupiedFirstClassSeats = Integer.parseInt(flight[8]);
             int occupiedSecondClassSeats = Integer.parseInt(flight[9]);
-            flightsFromFile.add(new Flight(flightNumber, source, destination, LocalDate.of(year, month, day), economicSeatCapacity,FirstClassSeatCapacity,secondClassSeatCapacity,occupiedEconomicSeats,occupiedFirstClassSeats,occupiedSecondClassSeats));
+            int economyFare = Integer.parseInt(flight[10]);
+            int firstClassFare = Integer.parseInt(flight[11]);
+            int secondClassFare = Integer.parseInt(flight[12]);
+            flightsFromFile.add(new Flight(flightNumber, source, destination, LocalDate.of(year, month, day), economicSeatCapacity,FirstClassSeatCapacity,secondClassSeatCapacity,occupiedEconomicSeats,occupiedFirstClassSeats,occupiedSecondClassSeats,economyFare,firstClassFare,secondClassFare));
         }
         return flightsFromFile;
     }

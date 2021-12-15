@@ -6,26 +6,20 @@ public class Flight {
     private final long number;
     private final String source;
     private final String destination;
+    private final Cabin firstClass;
+    private final Cabin secondClass;
+    private final Cabin economyClass;
     private LocalDate departureDate;
-    private final int economyClassCapacity;
-    private final int firstClassCapacity;
-    private final int secondClassCapacity;
-    private int occupiedEconomicSeats;
-    private int occupiedFirstClassSeats;
-    private int occupiedSecondClassSeats;
-    private Cabin selectedCabinType;
+    private CabinTypes selectedCabinType;
 
-    public Flight(long number, String source, String destination, LocalDate departureDate, int economyClassCapacity, int firstClassCapacity, int secondClassCapacity, int occupiedEconomicSeats, int occupiedFirstClassSeats, int occupiedSecondClassSeats) {
+    public Flight(long number, String source, String destination, LocalDate departureDate, int economyClassCapacity, int firstClassCapacity, int secondClassCapacity, int occupiedEconomicSeats, int occupiedFirstClassSeats, int occupiedSecondClassSeats, int economyClassBaseFare, int firstClassBaseFare, int secondClassBaseFare) {
         this.number = number;
         this.source = source;
         this.destination = destination;
         this.departureDate = departureDate;
-        this.economyClassCapacity = economyClassCapacity;
-        this.firstClassCapacity = firstClassCapacity;
-        this.secondClassCapacity = secondClassCapacity;
-        this.occupiedEconomicSeats = occupiedEconomicSeats;
-        this.occupiedFirstClassSeats = occupiedFirstClassSeats;
-        this.occupiedSecondClassSeats = occupiedSecondClassSeats;
+        this.firstClass = new Cabin(firstClassCapacity, occupiedFirstClassSeats, firstClassBaseFare);
+        this.secondClass = new Cabin(secondClassCapacity, occupiedSecondClassSeats, secondClassBaseFare);
+        this.economyClass = new Cabin(economyClassCapacity, occupiedEconomicSeats, economyClassBaseFare);
     }
 
     public long getNumber() {
@@ -44,65 +38,101 @@ public class Flight {
         return departureDate;
     }
 
-
-    public int getCapacity(Cabin type) {
+    public int getCapacity(CabinTypes type) {
         switch (type) {
             case ALL:
-                return (economyClassCapacity + firstClassCapacity + secondClassCapacity);
+                return (economyClass.getCapacity() + firstClass.getCapacity() + secondClass.getCapacity());
             case FIRST:
-                return firstClassCapacity;
+                return firstClass.getCapacity();
             case SECOND:
-                return secondClassCapacity;
+                return secondClass.getCapacity();
             case ECONOMIC:
-                return economyClassCapacity;
+                return economyClass.getCapacity();
         }
         return -1;
     }
 
-    public int getOccupiedSeats(Cabin type) {
+    public int getOccupiedSeats(CabinTypes type) {
+        this.selectedCabinType = type;
         switch (type) {
             case ALL:
-                return (occupiedEconomicSeats + occupiedFirstClassSeats + occupiedSecondClassSeats);
+                return (firstClass.getOccupiedSeats() + secondClass.getOccupiedSeats() + economyClass.getOccupiedSeats());
             case FIRST:
-                return occupiedFirstClassSeats;
+                return firstClass.getOccupiedSeats();
             case SECOND:
-                return occupiedSecondClassSeats;
+                return secondClass.getOccupiedSeats();
             case ECONOMIC:
-                return occupiedEconomicSeats;
+                return economyClass.getOccupiedSeats();
         }
         return -1;
     }
 
-    public void updateOccupiedSeats(Cabin type, int numberOfPassengersBoarding) {
+    public void updateOccupiedSeats(CabinTypes type, int numberOfPassengersBoarding) {
         switch (type) {
-            case ALL:
+            case FIRST:
+                firstClass.updateOccupiedSeats(numberOfPassengersBoarding);
                 return;
-            case FIRST:
-                if ((occupiedFirstClassSeats + numberOfPassengersBoarding) <= firstClassCapacity) {
-                    this.occupiedFirstClassSeats += numberOfPassengersBoarding;
-                }
-                break;
             case SECOND:
-
-                if ((occupiedSecondClassSeats + numberOfPassengersBoarding) <= secondClassCapacity) {
-                    this.occupiedSecondClassSeats += numberOfPassengersBoarding;
-                }
-                break;
+                secondClass.updateOccupiedSeats(numberOfPassengersBoarding);
+                return;
             case ECONOMIC:
-                if ((occupiedEconomicSeats + numberOfPassengersBoarding) <= economyClassCapacity) {
-                    this.occupiedEconomicSeats += numberOfPassengersBoarding;
-                }
-                break;
+                economyClass.updateOccupiedSeats(numberOfPassengersBoarding);
+                return;
+            default:
+                throw new IllegalStateException("Unexpected value: " + type);
         }
     }
 
-    public int getAvailableSeats(Cabin type) {
-        this.selectedCabinType=type;
+    public int getAvailableSeats(CabinTypes type) {
         return getCapacity(type) - getOccupiedSeats(type);
     }
-    public int getAvailableSeats() {
 
+    public int getAvailableSeats() { //used to fetch value in thymeleaf
         return getCapacity(this.selectedCabinType) - getOccupiedSeats(this.selectedCabinType);
+    }
+
+    public int getTicketPrice(CabinTypes type) {
+        switch (type) {
+            case FIRST:
+                return firstClass.getFare();
+            case SECOND:
+                return secondClass.getFare();
+            case ECONOMIC:
+                return economyClass.getFare();
+            default:
+                throw new IllegalStateException("Unexpected value: " + type);
+        }
+    }
+
+    public int getTicketPrice() { //used to fetch value in thymeleaf
+        switch (this.selectedCabinType) {
+            case FIRST:
+                return firstClass.getFare();
+            case SECOND:
+                return secondClass.getFare();
+            case ECONOMIC:
+                return economyClass.getFare();
+            default:
+                throw new IllegalStateException("Unexpected value: " + selectedCabinType);
+        }
+    }
+
+    public void updateTicketPrice(CabinTypes type, int percentage) {
+        switch (type) {
+            case ALL:
+                break;
+            case FIRST:
+                firstClass.updateFare(percentage);
+                break;
+            case SECOND:
+                secondClass.updateFare(percentage);
+                break;
+            case ECONOMIC:
+                economyClass.updateFare(percentage);
+                break;
+            default:
+                throw new IllegalStateException("Unexpected value: " + type);
+        }
     }
 
 }

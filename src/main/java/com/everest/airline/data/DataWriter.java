@@ -1,6 +1,6 @@
 package com.everest.airline.data;
 
-import com.everest.airline.model.Cabin;
+import com.everest.airline.model.CabinTypes;
 import com.everest.airline.model.Flight;
 
 import java.io.File;
@@ -29,17 +29,23 @@ public class DataWriter {
         myWriter.write("-");
         myWriter.write(String.valueOf(flight.getDepartureDate().getDayOfMonth()));
         myWriter.write(",");
-        myWriter.write(String.valueOf(flight.getCapacity(Cabin.ECONOMIC)));
+        myWriter.write(String.valueOf(flight.getCapacity(CabinTypes.ECONOMIC)));
         myWriter.write(",");
-        myWriter.write(String.valueOf(flight.getCapacity(Cabin.FIRST)));
+        myWriter.write(String.valueOf(flight.getCapacity(CabinTypes.FIRST)));
         myWriter.write(",");
-        myWriter.write(String.valueOf(flight.getCapacity(Cabin.SECOND)));
+        myWriter.write(String.valueOf(flight.getCapacity(CabinTypes.SECOND)));
         myWriter.write(",");
-        myWriter.write(String.valueOf(flight.getOccupiedSeats(Cabin.ECONOMIC)));
+        myWriter.write(String.valueOf(flight.getOccupiedSeats(CabinTypes.ECONOMIC)));
         myWriter.write(",");
-        myWriter.write(String.valueOf(flight.getOccupiedSeats(Cabin.FIRST)));
+        myWriter.write(String.valueOf(flight.getOccupiedSeats(CabinTypes.FIRST)));
         myWriter.write(",");
-        myWriter.write(String.valueOf(flight.getOccupiedSeats(Cabin.SECOND)));
+        myWriter.write(String.valueOf(flight.getOccupiedSeats(CabinTypes.SECOND)));
+        myWriter.write(",");
+        myWriter.write(String.valueOf(flight.getTicketPrice(CabinTypes.ECONOMIC)));
+        myWriter.write(",");
+        myWriter.write(String.valueOf(flight.getTicketPrice(CabinTypes.FIRST)));
+        myWriter.write(",");
+        myWriter.write(String.valueOf(flight.getTicketPrice(CabinTypes.SECOND)));
         myWriter.write("\n");
         myWriter.close();
     }

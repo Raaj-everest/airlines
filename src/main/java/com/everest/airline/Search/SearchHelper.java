@@ -1,6 +1,7 @@
 package com.everest.airline.Search;
 
 import com.everest.airline.model.Cabin;
+import com.everest.airline.model.CabinTypes;
 import com.everest.airline.model.Flight;
 
 import java.io.IOException;
@@ -12,8 +13,7 @@ import static com.everest.airline.data.DataReader.readFromFiles;
 
 public class SearchHelper {
 
-    public static List<Flight> sourceToDestination(String from, String to, LocalDate departureDate, Integer ticket,Cabin cabinType) throws IOException {
-        System.out.println(cabinType);
+    public static List<Flight> sourceToDestination(String from, String to, LocalDate departureDate, int ticket, CabinTypes cabinType) throws IOException {
         return readFromFiles().stream()
                 .filter(flight -> (flight.getSource().equalsIgnoreCase(from) && flight.getDestination().equalsIgnoreCase(to) && flight.getDepartureDate().equals(departureDate) && (ticket <= (flight.getAvailableSeats(cabinType)))))
                 .collect(Collectors.toList());
