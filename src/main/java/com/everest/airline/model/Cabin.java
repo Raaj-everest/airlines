@@ -3,23 +3,22 @@ package com.everest.airline.model;
 public class Cabin {
     private final int capacity;
     private int occupiedSeats;
-    private int fare;
+    private double fare;
 
-    public Cabin(int capacity, int occupiedSeats, int baseFare) {
+    public Cabin(int capacity, int occupiedSeats, double baseFare) {
         this.occupiedSeats = occupiedSeats;
         this.capacity = capacity;
         this.fare = baseFare;
     }
 
     public void updateFare(int percentage) {
-        if (percentage > 0) {
-            this.fare += (this.fare * (percentage / 100));
-        } else {
-            this.fare -= (this.fare * (percentage / 100));
-        }
+            this.fare =(this.fare + (this.fare * percentage / 100));
+        System.out.println(fare);
+        System.out.println("price incresed");
+
     }
 
-    public int getFare() {
+    public double getFare() {
         return this.fare;
     }
 

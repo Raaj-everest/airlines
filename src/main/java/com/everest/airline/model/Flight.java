@@ -13,7 +13,7 @@ public class Flight {
     private CabinTypes selectedCabinType;
     private int numberOfPassengersBoarding;
 
-    public Flight(long number, String source, String destination, LocalDate departureDate, int economyClassCapacity, int firstClassCapacity, int secondClassCapacity, int occupiedEconomicSeats, int occupiedFirstClassSeats, int occupiedSecondClassSeats, int economyClassBaseFare, int firstClassBaseFare, int secondClassBaseFare) {
+    public Flight(long number, String source, String destination, LocalDate departureDate, int economyClassCapacity, int firstClassCapacity, int secondClassCapacity, int occupiedEconomicSeats, int occupiedFirstClassSeats, int occupiedSecondClassSeats, double economyClassBaseFare, double firstClassBaseFare, double secondClassBaseFare) {
         this.number = number;
         this.source = source;
         this.destination = destination;
@@ -93,20 +93,22 @@ public class Flight {
         return getCapacity(this.selectedCabinType) - getOccupiedSeats(this.selectedCabinType);
     }
 
-    public int getTicketPrice(CabinTypes type) {
+    public double getTicketPrice(CabinTypes type) {
         switch (type) {
             case FIRST:
-                return firstClass.getFare();
-            case SECOND:
-                return secondClass.getFare();
+                System.out.println("HIIIIIIIIIIIIIII");
+                firstClass.updateFare(firstClass.getCapacity()-firstClass.getOccupiedSeats());
+                return (int)firstClass.getFare();
+            case SECOND: ;
+                return (int)secondClass.getFare();
             case ECONOMIC:
-                return economyClass.getFare();
+                return (int)economyClass.getFare();
             default:
                 throw new IllegalStateException("Unexpected value: " + type);
         }
     }
 
-    public int getTicketPrice() { //used to fetch value in thymeleaf
+    public double getTicketPrice() { //used to fetch value in thymeleaf
         switch (this.selectedCabinType) {
             case FIRST:
                 return (firstClass.getFare()*numberOfPassengersBoarding);
