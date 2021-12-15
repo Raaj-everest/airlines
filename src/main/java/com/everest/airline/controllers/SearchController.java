@@ -1,6 +1,7 @@
 package com.everest.airline.controllers;
 
 import com.everest.airline.Search.SearchHelper;
+import com.everest.airline.model.Cabin;
 import com.everest.airline.model.Flight;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.Calendar;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,15 +25,16 @@ public class SearchController {
     private String to;
     private String departureDate;
     private int NUmberOfPassengersBoarding;
-    private String classType;
+    private Cabin classType;
 
 
     @RequestMapping(value = "/search")
     public String search(String from, String to, String departureDate, String numberOfPassengersBoarding, String classType, Model model) throws IOException {
+        System.out.println(classType);
         if (from != null) {
             setValues(from,to,departureDate,numberOfPassengersBoarding,classType);
         }
-        searchedFlights = SearchHelper.sourceToDestination(this.from, this.to, LocalDate.parse(this.departureDate), Integer.valueOf(this.NUmberOfPassengersBoarding));
+        searchedFlights = SearchHelper.sourceToDestination(this.from, this.to, LocalDate.parse(this.departureDate), Integer.valueOf(this.NUmberOfPassengersBoarding),this.classType);
         if (searchedFlights.size() == 0) {
             return "noFlights";
         }
@@ -42,7 +45,7 @@ public class SearchController {
     @RequestMapping(value = "/{number}")
     public String book(@PathVariable("number") String number, Model model) throws IOException {
         List<Flight> flights = readFromFiles().stream().filter(f -> f.getNumber() == Integer.parseInt(number)).collect(Collectors.toList());
-        flights.get(0).updateEconomicOccupiedSeats(this.NUmberOfPassengersBoarding);
+        flights.get(0).updateOccupiedSeats(classType,this.NUmberOfPassengersBoarding);
         writingToFiles(flights.get(0));
         return "redirect:search";
     }
@@ -52,6 +55,6 @@ public class SearchController {
         this.to = to;
         this.departureDate = departureDate;
         this.NUmberOfPassengersBoarding = Integer.parseInt(numberOfPassengersBoarding);
-        this.classType = classType;
+        this.classType = Cabin.valueOf(classType);
     }
 }
