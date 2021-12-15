@@ -11,6 +11,7 @@ public class Flight {
     private final Cabin economyClass;
     private LocalDate departureDate;
     private CabinTypes selectedCabinType;
+    private int numberOfPassengersBoarding;
 
     public Flight(long number, String source, String destination, LocalDate departureDate, int economyClassCapacity, int firstClassCapacity, int secondClassCapacity, int occupiedEconomicSeats, int occupiedFirstClassSeats, int occupiedSecondClassSeats, int economyClassBaseFare, int firstClassBaseFare, int secondClassBaseFare) {
         this.number = number;
@@ -53,7 +54,6 @@ public class Flight {
     }
 
     public int getOccupiedSeats(CabinTypes type) {
-        this.selectedCabinType = type;
         switch (type) {
             case ALL:
                 return (firstClass.getOccupiedSeats() + secondClass.getOccupiedSeats() + economyClass.getOccupiedSeats());
@@ -83,7 +83,9 @@ public class Flight {
         }
     }
 
-    public int getAvailableSeats(CabinTypes type) {
+    public int getAvailableSeats(CabinTypes type,int numberOfPassengers) {
+        this.selectedCabinType = type;
+        this.numberOfPassengersBoarding = numberOfPassengers;
         return getCapacity(type) - getOccupiedSeats(type);
     }
 
@@ -107,11 +109,11 @@ public class Flight {
     public int getTicketPrice() { //used to fetch value in thymeleaf
         switch (this.selectedCabinType) {
             case FIRST:
-                return firstClass.getFare();
+                return (firstClass.getFare()*numberOfPassengersBoarding);
             case SECOND:
-                return secondClass.getFare();
+                return (secondClass.getFare()*numberOfPassengersBoarding);
             case ECONOMIC:
-                return economyClass.getFare();
+                return (economyClass.getFare()*numberOfPassengersBoarding);
             default:
                 throw new IllegalStateException("Unexpected value: " + selectedCabinType);
         }

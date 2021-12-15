@@ -13,9 +13,9 @@ import static com.everest.airline.data.DataReader.readFromFiles;
 
 public class SearchHelper {
 
-    public static List<Flight> sourceToDestination(String from, String to, LocalDate departureDate, int ticket, CabinTypes cabinType) throws IOException {
+    public static List<Flight> sourceToDestination(String from, String to, LocalDate departureDate, int numberOfPassengersBoarding, CabinTypes cabinType) throws IOException {
         return readFromFiles().stream()
-                .filter(flight -> (flight.getSource().equalsIgnoreCase(from) && flight.getDestination().equalsIgnoreCase(to) && flight.getDepartureDate().equals(departureDate) && (ticket <= (flight.getAvailableSeats(cabinType)))))
+                .filter(flight -> (flight.getSource().equalsIgnoreCase(from) && flight.getDestination().equalsIgnoreCase(to) && flight.getDepartureDate().equals(departureDate) && (numberOfPassengersBoarding <= (flight.getAvailableSeats(cabinType,numberOfPassengersBoarding)))))
                 .collect(Collectors.toList());
     }
 }
