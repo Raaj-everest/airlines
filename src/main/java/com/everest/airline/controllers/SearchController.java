@@ -1,6 +1,5 @@
 package com.everest.airline.controllers;
 
-import com.everest.airline.Search.SearchHelper;
 import com.everest.airline.model.CabinTypes;
 import com.everest.airline.model.Flight;
 import org.springframework.stereotype.Controller;
@@ -19,7 +18,6 @@ import static com.everest.airline.data.DataWriter.writingToFiles;
 @Controller
 public class SearchController {
 
-    private List<Flight> searchedFlights;
     private String from;
     private String to;
     private LocalDate departureDate;
@@ -32,7 +30,9 @@ public class SearchController {
         if (from != null) {
             setValues(from, to, departureDate, numberOfPassengersBoarding, classType);
         }
-        searchedFlights = SearchHelper.sourceToDestination(this.from, this.to, this.departureDate, this.numberOfPassengersBoarding, this.classType);
+        List<Flight> searchedFlights = readFromFiles().stream()
+                .filter(flight -> (flight.getSource().equalsIgnoreCase(this.from) && flight.getDestination().equalsIgnoreCase(this.to) && flight.getDepartureDate().equals(this.departureDate) && (flight.checkAvailability(this.classType, this.numberOfPassengersBoarding))))
+                .collect(Collectors.toList());
         if (searchedFlights.size() == 0) {
             return "noFlights";
         }
@@ -43,9 +43,9 @@ public class SearchController {
     @RequestMapping(value = "/{number}")
     public String book(@PathVariable("number") String number, Model model) throws IOException {
         List<Flight> flights = readFromFiles().stream().filter(f -> f.getNumber() == Integer.parseInt(number)).collect(Collectors.toList());
-        flights.get(0).updateOccupiedSeats(classType, this.numberOfPassengersBoarding);
+        flights.get(0).updateOccupiedSeats(classType, numberOfPassengersBoarding);
         writingToFiles(flights.get(0));
-        return "redirect:search";
+        return "confirmed";
     }
 
     public void setValues(String from, String to, String departureDate, String numberOfPassengersBoarding, String classType) {

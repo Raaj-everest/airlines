@@ -6,6 +6,9 @@ import com.everest.airline.model.Flight;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -17,36 +20,8 @@ public class DataWriter {
         String FlightFolder = Filename + FileFormat;
         List<File> files = DataReader.getFilesInFolder().stream().filter(file -> (FlightFolder.equals(file.getName()))).collect(Collectors.toList());
         FileWriter myWriter = new FileWriter(files.get(0));
-        myWriter.write(String.valueOf(flight.getNumber()));
-        myWriter.write(",");
-        myWriter.write(flight.getSource());
-        myWriter.write(",");
-        myWriter.write(flight.getDestination());
-        myWriter.write(",");
-        myWriter.write(String.valueOf(flight.getDepartureDate().getYear()));
-        myWriter.write("-");
-        myWriter.write(String.valueOf(flight.getDepartureDate().getMonthValue()));
-        myWriter.write("-");
-        myWriter.write(String.valueOf(flight.getDepartureDate().getDayOfMonth()));
-        myWriter.write(",");
-        myWriter.write(String.valueOf(flight.getCapacity(CabinTypes.ECONOMIC)));
-        myWriter.write(",");
-        myWriter.write(String.valueOf(flight.getCapacity(CabinTypes.FIRST)));
-        myWriter.write(",");
-        myWriter.write(String.valueOf(flight.getCapacity(CabinTypes.SECOND)));
-        myWriter.write(",");
-        myWriter.write(String.valueOf(flight.getOccupiedSeats(CabinTypes.ECONOMIC)));
-        myWriter.write(",");
-        myWriter.write(String.valueOf(flight.getOccupiedSeats(CabinTypes.FIRST)));
-        myWriter.write(",");
-        myWriter.write(String.valueOf(flight.getOccupiedSeats(CabinTypes.SECOND)));
-        myWriter.write(",");
-        myWriter.write(String.valueOf(flight.getTicketPrice(CabinTypes.ECONOMIC)));
-        myWriter.write(",");
-        myWriter.write(String.valueOf(flight.getTicketPrice(CabinTypes.FIRST)));
-        myWriter.write(",");
-        myWriter.write(String.valueOf(flight.getTicketPrice(CabinTypes.SECOND)));
-        myWriter.write("\n");
+        myWriter.write(flight.toString());
         myWriter.close();
     }
+
 }
