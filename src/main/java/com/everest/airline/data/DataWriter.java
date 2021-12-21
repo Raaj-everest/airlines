@@ -1,16 +1,11 @@
 package com.everest.airline.data;
 
-import com.everest.airline.model.CabinTypes;
 import com.everest.airline.model.Flight;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class DataWriter {
 
@@ -18,8 +13,8 @@ public class DataWriter {
         String Filename = String.valueOf(flight.getNumber());
         String FileFormat = ".txt";
         String FlightFolder = Filename + FileFormat;
-        List<File> files = DataReader.getFilesInFolder().stream().filter(file -> (FlightFolder.equals(file.getName()))).collect(Collectors.toList());
-        FileWriter myWriter = new FileWriter(files.get(0));
+        File files = Paths.get("/Users/raaj/projects/airlines/src/main/java/com/everest/airline/data/flightsData/" + FlightFolder).toFile();
+        FileWriter myWriter = new FileWriter(files);
         myWriter.write(flight.toString());
         myWriter.close();
     }

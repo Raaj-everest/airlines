@@ -62,7 +62,33 @@ public class Flight {
     }
 
     public double getTicketPrice(CabinTypes type) {
-        return (int) selector(type).getFare();
+        LocalDate now = LocalDate.now();
+        int differenceInDays = Math.abs(now.compareTo(departureDate));
+        if (differenceInDays > 15) {
+            return (int) selector(type).getFare();
+        }
+        double currentFare;
+        double fare = selector(type).getFare();
+        if (differenceInDays > 3) {
+            for (int i = 1; i <= (15 - differenceInDays); i++) {
+                currentFare = fare + (fare * 2 / 100);
+                fare = currentFare;
+            }
+            return (int) fare;
+        }
+        if (differenceInDays > 0) {
+            for (int i = 1; i <= (12); i++) {
+                currentFare = fare + (fare * 2 / 100);
+                fare = currentFare;
+            }
+            for(int i=1;i<=3;i++){
+                currentFare = fare + (fare * 10 / 100);
+                fare = currentFare;
+            }
+            return (int) fare;
+        }
+
+        return -1;
     }
 
     public double getBaseTicketPrice(CabinTypes type) {
@@ -103,7 +129,7 @@ public class Flight {
     }
 
     public double getTicketPrice() { //used to fetch value in thymeleaf
-        return selector(this.selectedCabinType).getFare() * (numberOfPassengersBoarding);
+        return getTicketPrice(selectedCabinType) * (numberOfPassengersBoarding);
     }
 
 }
