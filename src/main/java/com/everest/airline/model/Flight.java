@@ -40,15 +40,15 @@ public class Flight {
     }
 
     public int getCapacity(CabinTypes type) {
-        return selector(type).getCapacity();
+        return selecting(type).getCapacity();
     }
 
     public int getOccupiedSeats(CabinTypes type) {
-        return selector(type).getOccupiedSeats();
+        return selecting(type).getOccupiedSeats();
     }
 
     public void updateOccupiedSeats(CabinTypes type, int numberOfPassengersBoarding) {
-        selector(type).updateOccupiedSeats(numberOfPassengersBoarding);
+        selecting(type).updateOccupiedSeats(numberOfPassengersBoarding);
     }
 
     public int getAvailableSeats(CabinTypes type) {
@@ -56,8 +56,8 @@ public class Flight {
     }
 
     public boolean checkAvailability(CabinTypes type, int numberOfPassengers) {
-        this.selectedCabinType = type;
-        this.numberOfPassengersBoarding = numberOfPassengers;
+        this.selectedCabinType = type;  //just using to fetch data from thymeleaf template
+        this.numberOfPassengersBoarding = numberOfPassengers;  ////just using to fetch data from thymeleaf template
         return numberOfPassengers <= getAvailableSeats(type);
     }
 
@@ -65,42 +65,22 @@ public class Flight {
         LocalDate now = LocalDate.now();
         int differenceInDays = Math.abs(now.compareTo(departureDate));
         if (differenceInDays > 15) {
-            return (int) selector(type).getFare();
+            return (int) selecting(type).getFare();
+        } else {
+            return calculateFare(type, differenceInDays);
         }
-        double currentFare;
-        double fare = selector(type).getFare();
-        if (differenceInDays > 3) {
-            for (int i = 1; i <= (15 - differenceInDays); i++) {
-                currentFare = fare + (fare * 2 / 100);
-                fare = currentFare;
-            }
-            return (int) fare;
-        }
-        if (differenceInDays > 0) {
-            for (int i = 1; i <= (12); i++) {
-                currentFare = fare + (fare * 2 / 100);
-                fare = currentFare;
-            }
-            for(int i=1;i<=3;i++){
-                currentFare = fare + (fare * 10 / 100);
-                fare = currentFare;
-            }
-            return (int) fare;
-        }
-
-        return -1;
     }
 
     public double getBaseTicketPrice(CabinTypes type) {
-        return (int) selector(type).getBaseFare();
+        return (int) selecting(type).getBaseFare();
     }
 
 
     public void updateTicketPrice(CabinTypes type, int percentage) {
-        selector(type).updateFare(percentage);
+        selecting(type).updateFare(percentage);
     }
 
-    public Cabin selector(CabinTypes cabinType) {
+    private Cabin selecting(CabinTypes cabinType) {
         switch (cabinType) {
             case FIRST:
                 return firstClass;
@@ -132,4 +112,27 @@ public class Flight {
         return getTicketPrice(selectedCabinType) * (numberOfPassengersBoarding);
     }
 
+    private int calculateFare(CabinTypes type, int differenceInDays) {
+        double currentFare;
+        double fare = selecting(type).getFare();
+        if (differenceInDays > 3) {
+            for (int i = 1; i <= (15 - differenceInDays); i++) {
+                currentFare = fare + (fare * 2 / 100);
+                fare = currentFare;
+            }
+            return (int) fare;
+        }
+        if (differenceInDays > 0) {
+            for (int i = 1; i <= (12); i++) {
+                currentFare = fare + (fare * 2 / 100);
+                fare = currentFare;
+            }
+            for (int i = 1; i <= 3; i++) {
+                currentFare = fare + (fare * 10 / 100);
+                fare = currentFare;
+            }
+            return (int) fare;
+        }
+        return -1;
+    }
 }
