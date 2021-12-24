@@ -6,10 +6,10 @@ public class Flight {
     private final long number;
     private final String source;
     private final String destination;
-    private LocalDate departureDate;
     private final Cabin firstClass;
     private final Cabin secondClass;
     private final Cabin economyClass;
+    private LocalDate departureDate;
 
 
     public Flight(long number, String source, String destination, LocalDate departureDate, int economyClassCapacity, int firstClassCapacity, int secondClassCapacity, int occupiedEconomicSeats, int occupiedFirstClassSeats, int occupiedSecondClassSeats, double economyClassBaseFare, double firstClassBaseFare, double secondClassBaseFare) {
@@ -21,6 +21,7 @@ public class Flight {
         this.secondClass = new Cabin(secondClassCapacity, occupiedSecondClassSeats, secondClassBaseFare);
         this.economyClass = new Cabin(economyClassCapacity, occupiedEconomicSeats, economyClassBaseFare);
     }
+
 
     public long getNumber() {
         return number;

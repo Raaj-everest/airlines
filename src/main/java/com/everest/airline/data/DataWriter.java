@@ -13,7 +13,7 @@ public class DataWriter {
         String Filename = String.valueOf(flight.getNumber());
         String FileFormat = ".txt";
         String FlightFolder = Filename + FileFormat;
-        File files = Paths.get("/Users/raaj/projects/airlines/src/main/java/com/everest/airline/data/flightsData/" + FlightFolder).toFile();
+        File files = Paths.get("src/main/java/com/everest/airline/data/flightsData/" + FlightFolder).toFile();
         FileWriter myWriter = new FileWriter(files);
         myWriter.write(flight.toString());
         myWriter.close();
