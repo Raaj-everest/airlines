@@ -45,7 +45,7 @@ public class DataReader {
     }
 
     static List<File> getFilesInFolder() throws IOException {
-        return Files.walk(Paths.get("/Users/raaj/projects/airlines/src/main/java/com/everest/airline/data/flightsData"))
+        return Files.walk(Paths.get("src/main/java/com/everest/airline/data/flightsData"))
                 .filter(Files::isRegularFile)
                 .map(Path::toFile)
                 .collect(Collectors.toList());

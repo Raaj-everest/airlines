@@ -37,6 +37,7 @@ public class SearchController {
             return "noFlights";
         }
         model.addAttribute("flights", searchedFlights);
+        model.addAttribute("CabinTypes",classType);
         return "search";
     }
 

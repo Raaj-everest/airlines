@@ -6,12 +6,11 @@ public class Flight {
     private final long number;
     private final String source;
     private final String destination;
+    private LocalDate departureDate;
     private final Cabin firstClass;
     private final Cabin secondClass;
     private final Cabin economyClass;
-    private LocalDate departureDate;
-    private CabinTypes selectedCabinType;  //only used to fetch data from thymeleaf
-    private int numberOfPassengersBoarding;  //only used to fetch data from thymeleaf
+
 
     public Flight(long number, String source, String destination, LocalDate departureDate, int economyClassCapacity, int firstClassCapacity, int secondClassCapacity, int occupiedEconomicSeats, int occupiedFirstClassSeats, int occupiedSecondClassSeats, double economyClassBaseFare, double firstClassBaseFare, double secondClassBaseFare) {
         this.number = number;
@@ -39,6 +38,18 @@ public class Flight {
         return departureDate;
     }
 
+    public Cabin getEconomyClass() {
+        return economyClass;
+    }
+
+    public Cabin getFirstClass() {
+        return firstClass;
+    }
+
+    public Cabin getSecondClass() {
+        return secondClass;
+    }
+
     public int getCapacity(CabinTypes type) {
         return selecting(type).getCapacity();
     }
@@ -56,8 +67,6 @@ public class Flight {
     }
 
     public boolean checkAvailability(CabinTypes type, int numberOfPassengers) {
-        this.selectedCabinType = type;  //just using to fetch data from thymeleaf template
-        this.numberOfPassengersBoarding = numberOfPassengers;  ////just using to fetch data from thymeleaf template
         return numberOfPassengers <= getAvailableSeats(type);
     }
 
@@ -65,14 +74,14 @@ public class Flight {
         LocalDate now = LocalDate.now();
         int differenceInDays = Math.abs(now.compareTo(departureDate));
         if (differenceInDays > 15) {
-            return (int) selecting(type).getFare();
+            return (int) selecting(type).getBaseFare();
         } else {
             return calculateFare(type, differenceInDays);
         }
     }
 
     public double getBaseTicketPrice(CabinTypes type) {
-        return (int) selecting(type).getBaseFare();
+        return (int) selecting(type).getNominalFare();
     }
 
 
@@ -104,17 +113,10 @@ public class Flight {
                 + "," + getBaseTicketPrice(CabinTypes.FIRST) + "," + getBaseTicketPrice(CabinTypes.SECOND);
     }
 
-    public int getAvailableSeats() { //used to fetch value in thymeleaf
-        return getCapacity(this.selectedCabinType) - getOccupiedSeats(this.selectedCabinType);
-    }
-
-    public double getTicketPrice() { //used to fetch value in thymeleaf
-        return getTicketPrice(selectedCabinType) * (numberOfPassengersBoarding);
-    }
 
     private int calculateFare(CabinTypes type, int differenceInDays) {
         double currentFare;
-        double fare = selecting(type).getFare();
+        double fare = selecting(type).getBaseFare();
         if (differenceInDays > 3) {
             for (int i = 1; i <= (15 - differenceInDays); i++) {
                 currentFare = fare + (fare * 2 / 100);
