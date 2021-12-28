@@ -2,6 +2,9 @@ package com.everest.airline.controllers;
 
 import com.everest.airline.model.CabinTypes;
 import com.everest.airline.model.Flight;
+import com.everest.airline.model.cabins.Cabin;
+import com.everest.airline.model.cabins.types.BusinessClass;
+import com.everest.airline.model.cabins.types.FirstClass;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,7 +25,7 @@ public class SearchController {
     private String to;
     private LocalDate departureDate;
     private int numberOfPassengersBoarding;
-    private CabinTypes classType;
+    private Cabin cabin;
 
 
     @RequestMapping(value = "/search")
@@ -55,5 +58,19 @@ public class SearchController {
         this.departureDate = LocalDate.parse(departureDate);
         this.numberOfPassengersBoarding = Integer.parseInt(numberOfPassengersBoarding);
         this.classType = CabinTypes.valueOf(classType);
+
     }
+    private Cabin selectCabin(String classType) {
+        switch (classType) {
+            case FIRST:
+                return FirstClass;
+            case SECOND:
+                return BusinessClass;
+            case ECONOMIC:
+                return ne();
+            default:
+                throw new IllegalStateException("Invalid cabin value: " + cabinType);
+        }
+    }
+
 }

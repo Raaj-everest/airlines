@@ -1,7 +1,7 @@
 package com.everest.airline.model;
 
-import com.everest.airline.model.cabins.types.BusinessClass;
 import com.everest.airline.model.cabins.Cabin;
+import com.everest.airline.model.cabins.types.BusinessClass;
 import com.everest.airline.model.cabins.types.EconomyClass;
 import com.everest.airline.model.cabins.types.FirstClass;
 
@@ -12,9 +12,9 @@ public class Flight {
     private final String source;
     private final String destination;
     private final Cabin firstClass;
-    private final Cabin secondClass;
+    private final Cabin businessClass;
     private final Cabin economyClass;
-    private LocalDate departureDate;
+    private final LocalDate departureDate;
 
 
     public Flight(long number, String source, String destination, LocalDate departureDate, int economyClassCapacity, int firstClassCapacity, int secondClassCapacity, int occupiedEconomicSeats, int occupiedFirstClassSeats, int occupiedSecondClassSeats, double economyClassBaseFare, double firstClassBaseFare, double secondClassBaseFare) {
@@ -23,7 +23,7 @@ public class Flight {
         this.destination = destination;
         this.departureDate = departureDate;
         this.firstClass = new FirstClass(firstClassCapacity, occupiedFirstClassSeats, firstClassBaseFare);
-        this.secondClass = new BusinessClass(secondClassCapacity, occupiedSecondClassSeats, secondClassBaseFare);
+        this.businessClass = new BusinessClass(secondClassCapacity, occupiedSecondClassSeats, secondClassBaseFare);
         this.economyClass = new EconomyClass(economyClassCapacity, occupiedEconomicSeats, economyClassBaseFare);
     }
 
@@ -52,77 +52,64 @@ public class Flight {
         return firstClass;
     }
 
-    public Cabin getSecondClass() {
-        return secondClass;
+    public Cabin getBusinessClass() {
+        return businessClass;
     }
 
-    public int getCapacity(CabinTypes type) {
-        return selecting(type).getCapacity();
+    public int getCapacity(Cabin cabin) {
+        return cabin.getCapacity();
     }
 
-    public int getOccupiedSeats(CabinTypes type) {
-        return selecting(type).getOccupiedSeats();
+    public int getOccupiedSeats(Cabin cabin) {
+        return cabin.getOccupiedSeats();
     }
 
-    public void updateOccupiedSeats(CabinTypes type, int numberOfPassengersBoarding) {
-        selecting(type).updateOccupiedSeats(numberOfPassengersBoarding);
+    public void updateOccupiedSeats(Cabin cabin, int numberOfPassengersBoarding) {
+        cabin.updateOccupiedSeats(numberOfPassengersBoarding);
     }
 
-    public int getAvailableSeats(CabinTypes type) {
-        return getCapacity(type) - getOccupiedSeats(type);
+    public int getAvailableSeats(Cabin cabin) {
+        return getCapacity(cabin) - getOccupiedSeats(cabin);
     }
 
-    public boolean checkAvailability(CabinTypes type, int numberOfPassengers) {
-        return numberOfPassengers <= getAvailableSeats(type);
+    public boolean checkAvailability(Cabin cabin, int numberOfPassengers) {
+        return numberOfPassengers <= getAvailableSeats(cabin);
     }
 
-    public double getTicketPrice(CabinTypes type) {
+    public double getTicketPrice(Cabin cabin) {
         LocalDate now = LocalDate.now();
         int differenceInDays = Math.abs(now.compareTo(departureDate));
         if (differenceInDays > 15) {
-            return (int) selecting(type).ticketCost();
+            return (int) cabin.ticketCost();
         } else {
-            return calculateFare(type, differenceInDays);
+            return calculateFare(cabin, differenceInDays);
         }
     }
 
-    public double getBaseTicketPrice(CabinTypes type) {
-        return (int) selecting(type).getBaseFare();
+    public double getBaseTicketPrice(Cabin cabin) {
+        return (int) cabin.getBaseFare();
     }
 
-
-    public void updateTicketPrice(CabinTypes type, int percentage) {
-        selecting(type).updateFare(percentage);
+    public void updateTicketPrice(Cabin cabin, int percentage) {
+        cabin.updateFare(percentage);
     }
 
-    private Cabin selecting(CabinTypes cabinType) {
-        switch (cabinType) {
-            case FIRST:
-                return firstClass;
-            case SECOND:
-                return secondClass;
-            case ECONOMIC:
-                return economyClass;
-            default:
-                throw new IllegalStateException("Unexpected value: " + cabinType);
-        }
-    }
 
     @Override
     public String toString() {
         return getNumber() + "," + getSource() + "," + getDestination()
                 + "," + getDepartureDate().getYear() + "-" + getDepartureDate().getMonthValue()
-                + "-" + getDepartureDate().getDayOfMonth() + "," + getCapacity(CabinTypes.ECONOMIC)
-                + "," + getCapacity(CabinTypes.FIRST) + "," + getCapacity(CabinTypes.SECOND)
-                + "," + getOccupiedSeats(CabinTypes.ECONOMIC) + "," + getOccupiedSeats(CabinTypes.FIRST)
-                + "," + getOccupiedSeats(CabinTypes.SECOND) + "," + getBaseTicketPrice(CabinTypes.ECONOMIC)
-                + "," + getBaseTicketPrice(CabinTypes.FIRST) + "," + getBaseTicketPrice(CabinTypes.SECOND);
+                + "-" + getDepartureDate().getDayOfMonth() + "," + getCapacity(economyClass)
+                + "," + getCapacity(firstClass) + "," + getCapacity(businessClass)
+                + "," + getOccupiedSeats(economyClass) + "," + getOccupiedSeats(firstClass)
+                + "," + getOccupiedSeats(businessClass) + "," + getBaseTicketPrice(economyClass)
+                + "," + getBaseTicketPrice(firstClass) + "," + getBaseTicketPrice(businessClass);
     }
 
 
-    private int calculateFare(CabinTypes type, int differenceInDays) {
+    private int calculateFare(Cabin cabin, int differenceInDays) {
         double currentFare;
-        double fare = selecting(type).ticketCost();
+        double fare = cabin.ticketCost();
         if (differenceInDays > 3) {
             for (int i = 1; i <= (15 - differenceInDays); i++) {
                 currentFare = fare + (fare * 2 / 100);
