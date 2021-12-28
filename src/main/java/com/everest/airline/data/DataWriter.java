@@ -1,12 +1,14 @@
 package com.everest.airline.data;
 
 import com.everest.airline.model.Flight;
+import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Paths;
 
+@Component
 public class DataWriter {
 
     public static void writingToFiles(Flight flight) throws IOException {
