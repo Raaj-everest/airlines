@@ -1,7 +1,10 @@
 package com.everest.airline.controllers;
 
+import com.everest.airline.data.DataReader;
+import com.everest.airline.data.DataWriter;
 import com.everest.airline.model.CabinTypes;
 import com.everest.airline.model.Flight;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -12,11 +15,15 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.everest.airline.data.DataReader.readFromFiles;
-import static com.everest.airline.data.DataWriter.writingToFiles;
 
 @Controller
 public class SearchController {
+
+    @Autowired
+    DataReader dataReader;
+
+    @Autowired
+    DataWriter dataWriter;
 
     private String from;
     private String to;
@@ -26,26 +33,26 @@ public class SearchController {
 
 
     @RequestMapping(value = "/search")
-    public String search(String from, String to, String departureDate, String numberOfPassengersBoarding, String classType, Model model) throws IOException {
+    public String search(String from, String to, String departureDate, String numberOfPassengersBoarding, String classType, Model model) {
         if (from != null) {
             setValues(from, to, departureDate, numberOfPassengersBoarding, classType);
         }
-        List<Flight> searchedFlights = readFromFiles().stream()
+        List<Flight> searchedFlights = dataReader.readFromFiles().stream()
                 .filter(flight -> (flight.getSource().equalsIgnoreCase(this.from) && flight.getDestination().equalsIgnoreCase(this.to) && flight.getDepartureDate().equals(this.departureDate) && (flight.checkAvailability(this.classType, this.numberOfPassengersBoarding))))
                 .collect(Collectors.toList());
         if (searchedFlights.size() == 0) {
             return "noFlights";
         }
         model.addAttribute("flights", searchedFlights);
-        model.addAttribute("CabinTypes",classType);
+        model.addAttribute("CabinType", classType);
         return "search";
     }
 
     @RequestMapping(value = "/{number}")
     public String book(@PathVariable("number") String number, Model model) throws IOException {
-        List<Flight> flights = readFromFiles().stream().filter(f -> f.getNumber() == Integer.parseInt(number)).collect(Collectors.toList());
+        List<Flight> flights = dataReader.readFromFiles().stream().filter(f -> f.getNumber() == Long.parseLong(number)).collect(Collectors.toList());
         flights.get(0).updateOccupiedSeats(classType, numberOfPassengersBoarding);
-        writingToFiles(flights.get(0));
+        dataWriter.writingToFiles(flights.get(0));
         return "confirmed";
     }
 
