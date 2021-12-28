@@ -1,5 +1,10 @@
 package com.everest.airline.model;
 
+import com.everest.airline.model.cabins.types.BusinessClass;
+import com.everest.airline.model.cabins.Cabin;
+import com.everest.airline.model.cabins.types.EconomyClass;
+import com.everest.airline.model.cabins.types.FirstClass;
+
 import java.time.LocalDate;
 
 public class Flight {
@@ -17,9 +22,9 @@ public class Flight {
         this.source = source;
         this.destination = destination;
         this.departureDate = departureDate;
-        this.firstClass = new Cabin(firstClassCapacity, occupiedFirstClassSeats, firstClassBaseFare);
-        this.secondClass = new Cabin(secondClassCapacity, occupiedSecondClassSeats, secondClassBaseFare);
-        this.economyClass = new Cabin(economyClassCapacity, occupiedEconomicSeats, economyClassBaseFare);
+        this.firstClass = new FirstClass(firstClassCapacity, occupiedFirstClassSeats, firstClassBaseFare);
+        this.secondClass = new BusinessClass(secondClassCapacity, occupiedSecondClassSeats, secondClassBaseFare);
+        this.economyClass = new EconomyClass(economyClassCapacity, occupiedEconomicSeats, economyClassBaseFare);
     }
 
 
@@ -75,14 +80,14 @@ public class Flight {
         LocalDate now = LocalDate.now();
         int differenceInDays = Math.abs(now.compareTo(departureDate));
         if (differenceInDays > 15) {
-            return (int) selecting(type).getBaseFare();
+            return (int) selecting(type).ticketCost();
         } else {
             return calculateFare(type, differenceInDays);
         }
     }
 
     public double getBaseTicketPrice(CabinTypes type) {
-        return (int) selecting(type).getNominalFare();
+        return (int) selecting(type).getBaseFare();
     }
 
 
@@ -117,7 +122,7 @@ public class Flight {
 
     private int calculateFare(CabinTypes type, int differenceInDays) {
         double currentFare;
-        double fare = selecting(type).getBaseFare();
+        double fare = selecting(type).ticketCost();
         if (differenceInDays > 3) {
             for (int i = 1; i <= (15 - differenceInDays); i++) {
                 currentFare = fare + (fare * 2 / 100);
