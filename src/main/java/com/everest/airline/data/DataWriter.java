@@ -23,11 +23,6 @@ public class DataWriter {
         FileWriter myWriter = new FileWriter(files);
         myWriter.write(flight.toString());
         myWriter.close();
-//        List<File> files = Files.walk(Paths.get("src/main/java/com/everest/airline/data/flightsData"))
-//                .filter(Files::isRegularFile)
-//                .map(Path::toFile)
-//                .collect(Collectors.toList());
-
     }
 
 }

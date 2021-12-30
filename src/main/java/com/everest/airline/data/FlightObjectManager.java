@@ -18,7 +18,7 @@ public class FlightObjectManager {
 
 
     public List<Flight> getAllFlights() {
-        return dataReader.readFromFiles();
+        return dataReader.getAllFlightsFromFiles();
     }
 
     public Flight getFlight(long number) {

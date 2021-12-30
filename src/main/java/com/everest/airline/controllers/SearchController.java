@@ -37,7 +37,7 @@ public class SearchController {
         if (from != null) {
             setValues(from, to, departureDate, numberOfPassengersBoarding, classType);
         }
-        List<Flight> searchedFlights = dataReader.readFromFiles().stream()
+        List<Flight> searchedFlights = dataReader.getAllFlightsFromFiles().stream()
                 .filter(flight -> (flight.getSource().equalsIgnoreCase(this.from) && flight.getDestination().equalsIgnoreCase(this.to) && flight.getDepartureDate().equals(this.departureDate) && (flight.checkAvailability(this.classType, this.numberOfPassengersBoarding))))
                 .collect(Collectors.toList());
         if (searchedFlights.size() == 0) {
@@ -50,7 +50,7 @@ public class SearchController {
 
     @RequestMapping(value = "/{number}")
     public String book(@PathVariable("number") String number, Model model) throws IOException {
-        List<Flight> flights = dataReader.readFromFiles().stream().filter(f -> f.getNumber() == Long.parseLong(number)).collect(Collectors.toList());
+        List<Flight> flights = dataReader.getAllFlightsFromFiles().stream().filter(f -> f.getNumber() == Long.parseLong(number)).collect(Collectors.toList());
         flights.get(0).updateOccupiedSeats(classType, numberOfPassengersBoarding);
         dataWriter.writingToFiles(flights.get(0));
         return "confirmed";
