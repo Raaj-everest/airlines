@@ -1,28 +1,37 @@
 package com.everest.airline.data;
 
+import com.everest.airline.data.exceptions.FileNotCreatedException;
 import com.everest.airline.model.Flight;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Arrays;
 
 @Component
 public class DataWriter {
 
-    public void writingToFiles(Flight flight) throws IOException {
-        String Filename = String.valueOf(flight.getNumber());
-        String FileFormat = ".txt";
-        String FlightFolder = Filename + FileFormat;
-        File files = Paths.get("src/main/java/com/everest/airline/data/flightsData/" + FlightFolder).toFile();
-        FileWriter myWriter = new FileWriter(files);
+    @Autowired
+    DataReader dataReader;
+
+    public void writingToFiles(Flight flight, File file) throws IOException {
+        FileWriter myWriter = new FileWriter(file);
         myWriter.write(flight.toString());
         myWriter.close();
     }
 
+    public File createFile() throws IOException {
+        File[] data = dataReader.getListOfFiles();
+        Arrays.sort(data);
+        String name = data[data.length - 1].getName();
+        long numberId = Long.parseLong(name.split("\\.")[0]);
+        numberId++;
+        File file1 = new File("src/main/java/com/everest/airline/data/flightsData/" + numberId + ".txt");
+        if (file1.createNewFile()) {
+            return file1;
+        }
+        throw new FileNotCreatedException("Failed to create the file");
+    }
 }

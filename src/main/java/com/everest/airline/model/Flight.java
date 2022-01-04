@@ -17,14 +17,14 @@ public class Flight {
     private final LocalDate departureDate;
 
 
-    public Flight(long number, String source, String destination, LocalDate departureDate, int economyClassCapacity, int firstClassCapacity, int businessClassCapacity, int occupiedEconomicSeats, int occupiedFirstClassSeats, int occupiedBusinessClassSeats, double economyClassBaseFare, double firstClassBaseFare, double businessClassBasefare) {
+    public Flight(long number, String source, String destination, LocalDate departureDate, Cabin firstClass,Cabin businessClass,Cabin economyClass) {
         this.number = number;
         this.source = source;
         this.destination = destination;
         this.departureDate = departureDate;
-        this.firstClass = new FirstClass(firstClassCapacity, occupiedFirstClassSeats, firstClassBaseFare);
-        this.businessClass = new BusinessClass(businessClassCapacity, occupiedBusinessClassSeats, businessClassBasefare);
-        this.economyClass = new EconomyClass(economyClassCapacity, occupiedEconomicSeats, economyClassBaseFare);
+        this.firstClass = firstClass;
+        this.businessClass = businessClass;
+        this.economyClass = economyClass;
     }
 
 

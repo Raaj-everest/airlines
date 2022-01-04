@@ -3,13 +3,19 @@ package com.everest.airline.restControllers;
 import com.everest.airline.data.DataReader;
 import com.everest.airline.data.DataWriter;
 import com.everest.airline.model.Flight;
+import com.everest.airline.model.cabins.Cabin;
+import com.everest.airline.model.cabins.types.BusinessClass;
+import com.everest.airline.model.cabins.types.EconomyClass;
+import com.everest.airline.model.cabins.types.FirstClass;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 
 @RestController
@@ -50,21 +56,22 @@ public class FlightsRestController {
 //    }
 
     @PostMapping("/flights")
-    public long create(@PathVariable Optional<String> number, String source, String destination, String departureDate, Integer economyClassCapacity, Integer firstClassCapacity, Integer secondClassCapacity, Integer occupiedEconomicSeats, Integer occupiedFirstClassSeats, Integer occupiedSecondClassSeats, Integer economyClassBaseFare, Double firstClassBaseFare, Double secondClassBaseFare) throws IOException {
+    public long create(@PathVariable Optional<String> number, String source, String destination, String departureDate, Integer economyClassCapacity, Integer firstClassCapacity, Integer businessClassCapacity, Integer occupiedEconomicSeats, Integer occupiedFirstClassSeats, Integer businessSecondClassSeats, Integer economyClassBaseFare, Double firstClassBaseFare, Double businessClassBaseFare) throws IOException {
         long numberId;
+        Cabin firstClass = new FirstClass(firstClassCapacity, occupiedFirstClassSeats, firstClassBaseFare);
+        Cabin businessClass = new BusinessClass(businessClassCapacity, businessSecondClassSeats, businessClassBaseFare);
+        Cabin economyClass = new EconomyClass(economyClassCapacity, occupiedEconomicSeats, economyClassBaseFare);
         if (number.isEmpty()) {
-            File[] data = dataReader.getListOfFiles();
-            Arrays.sort(data);
-            String name = data[data.length - 1].getName();
+            File file = dataWriter.createFile();
+            String name = file.getName();
             numberId = Long.parseLong(name.split("\\.")[0]);
-            numberId++;
-            File file1 = new File("src/main/java/com/everest/airline/data/flightsData/" + numberId + ".txt");
-            file1.createNewFile();
-        } else {
-            numberId = Long.parseLong(String.valueOf(number));
+            dataWriter.writingToFiles(new Flight(numberId, source, destination, LocalDate.parse(departureDate), firstClass, businessClass, economyClass), file);
+            return numberId;
         }
-        dataWriter.writingToFiles(new Flight(numberId, source, destination, LocalDate.parse(departureDate), economyClassCapacity, firstClassCapacity, secondClassCapacity, occupiedEconomicSeats, occupiedFirstClassSeats, occupiedSecondClassSeats, economyClassBaseFare, firstClassBaseFare, secondClassBaseFare));
+        numberId = Long.parseLong(String.valueOf(number));
+        dataWriter.writingToFiles(new Flight(numberId, source, destination, LocalDate.parse(departureDate), firstClass, businessClass, economyClass), dataReader.getFile(String.valueOf(numberId)));
         return numberId;
+
 
     }
 

@@ -63,7 +63,7 @@ public class SearchController {
         String flightData = dataReader.readFile(file);
         Flight flight = dataReader.stringToFlight(flightData);
         flight.updateOccupiedSeats(classType, numberOfPassengersBoarding);
-        dataWriter.writingToFiles(flight);
+        dataWriter.writingToFiles(flight,file);
         return "confirmed";
     }
 
