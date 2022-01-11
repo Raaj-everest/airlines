@@ -22,18 +22,14 @@ public class DataWriter {
         myWriter.close();
     }
 
-    public File createFile() throws IOException {
-        File[] data = dataReader.getListOfFiles();
-        Arrays.sort(data);
-        String name = data[data.length - 1].getName();
-        long numberId = Long.parseLong(name.split("\\.")[0]);
-        numberId++;
-        File file1 = new File("src/main/java/com/everest/airline/data/flightsData/" + numberId + ".txt");
+    public File createFile(long number) throws IOException {
+        File file1 = new File("src/main/java/com/everest/airline/data/flightsData/" + number + ".txt");
         if (file1.createNewFile()) {
             return file1;
         }
         throw new FileNotCreatedException("Failed to create the file");
     }
+
     public long generateNUmber(){
         File[] data = dataReader.getListOfFiles();
         Arrays.sort(data);
