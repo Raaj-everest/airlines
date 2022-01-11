@@ -34,4 +34,12 @@ public class DataWriter {
         }
         throw new FileNotCreatedException("Failed to create the file");
     }
+    public long generateNUmber(){
+        File[] data = dataReader.getListOfFiles();
+        Arrays.sort(data);
+        String name = data[data.length - 1].getName();
+        long numberId = Long.parseLong(name.split("\\.")[0]);
+        numberId++;
+        return numberId;
+    }
 }
