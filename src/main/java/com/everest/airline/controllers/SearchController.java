@@ -1,8 +1,8 @@
 package com.everest.airline.controllers;
 
-import com.everest.airline.data.DataReader;
-import com.everest.airline.data.DataWriter;
-import com.everest.airline.model.CabinTypes;
+import com.everest.airline.data.FlightReader;
+import com.everest.airline.data.FlightWriter;
+import com.everest.airline.model.cabins.CabinType;
 import com.everest.airline.model.Flight;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -22,16 +22,16 @@ import java.util.stream.Collectors;
 public class SearchController {
 
     @Autowired
-    DataReader dataReader;
+    FlightReader dataReader;
 
     @Autowired
-    DataWriter dataWriter;
+    FlightWriter dataWriter;
 
     private String from;
     private String to;
     private LocalDate departureDate;
     private int numberOfPassengersBoarding;
-    private CabinTypes classType;
+    private CabinType classType;
 
 
     @RequestMapping(value = "/search")
@@ -40,9 +40,9 @@ public class SearchController {
             setValues(from, to, departureDate, numberOfPassengersBoarding, classType);
         }
         List<Flight> data = new ArrayList<>();
-            File[] files = dataReader.getListOfFiles();
+            File[] files = dataReader.getAll();
             for (File file : files) {
-                String flightData = dataReader.readFile(file);
+                String flightData = dataReader.read(file);
                 Flight flight = dataReader.stringToFlight(flightData);
                 data.add(flight);
             }
@@ -60,10 +60,10 @@ public class SearchController {
     @RequestMapping(value = "/{number}")
     public String book(@PathVariable("number") String number, Model model) throws IOException {
         File file = dataReader.getFile(String.valueOf(number));
-        String flightData = dataReader.readFile(file);
+        String flightData = dataReader.read(file);
         Flight flight = dataReader.stringToFlight(flightData);
         flight.updateOccupiedSeats(classType, numberOfPassengersBoarding);
-        dataWriter.writingToFiles(flight,file);
+        dataWriter.write(flight,file);
         return "confirmed";
     }
 
@@ -72,6 +72,6 @@ public class SearchController {
         this.to = to;
         this.departureDate = LocalDate.parse(departureDate);
         this.numberOfPassengersBoarding = Integer.parseInt(numberOfPassengersBoarding);
-        this.classType = CabinTypes.valueOf(classType);
+        this.classType = CabinType.valueOf(classType);
     }
 }

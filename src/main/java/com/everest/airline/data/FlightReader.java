@@ -1,11 +1,9 @@
 package com.everest.airline.data;
 
 import com.everest.airline.data.exceptions.FolderNotFoundException;
+import com.everest.airline.model.cabins.CabinType;
 import com.everest.airline.model.Flight;
 import com.everest.airline.model.cabins.Cabin;
-import com.everest.airline.model.cabins.types.BusinessClass;
-import com.everest.airline.model.cabins.types.EconomyClass;
-import com.everest.airline.model.cabins.types.FirstClass;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -17,7 +15,7 @@ import java.time.LocalDate;
 import java.util.stream.Collectors;
 
 @Component
-public class DataReader {
+public class FlightReader {
 
     public Flight stringToFlight(String flightData) {
         String[] flight = flightData.split(",");
@@ -37,13 +35,13 @@ public class DataReader {
         double economyFare = Double.parseDouble(flight[10]);
         double firstClassFare = Double.parseDouble(flight[11]);
         double businessClassFare = Double.parseDouble(flight[12]);
-        Cabin firstClass = new FirstClass(firstClassSeatCapacity, occupiedFirstClassSeats, firstClassFare);
-        Cabin businessClass = new BusinessClass(businessClassSeatCapacity, occupiedBusinessClassSeats, businessClassFare);
-        Cabin economyClass = new EconomyClass(economicSeatCapacity, occupiedEconomicSeats, economyFare);
+        Cabin firstClass = new Cabin(firstClassSeatCapacity, occupiedFirstClassSeats, firstClassFare, CabinType.FIRST);
+        Cabin businessClass = new Cabin(businessClassSeatCapacity, occupiedBusinessClassSeats, businessClassFare,CabinType.BUSINESS);
+        Cabin economyClass = new Cabin(economicSeatCapacity, occupiedEconomicSeats, economyFare,CabinType.ECONOMIC);
         return new Flight(flightNumber, source, destination, LocalDate.of(year, month, day), firstClass, businessClass, economyClass);
     }
 
-    public File[] getListOfFiles() {
+    public File[] getAll() {
         File directoryPath = new File("src/main/java/com/everest/airline/data/flightsData");
         FilenameFilter textFileFilter = (dir, name) -> {
             String lowercaseName = name.toLowerCase();
@@ -59,7 +57,7 @@ public class DataReader {
         return Paths.get("src/main/java/com/everest/airline/data/flightsData/" + name + ".txt").toFile();
     }
 
-    public String readFile(File file) throws IOException {
+    public String read(File file) throws IOException {
         return Files.lines(Paths.get(file.getPath())).collect(Collectors.toList()).get(0);
     }
 

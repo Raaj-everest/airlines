@@ -2,17 +2,19 @@ package com.everest.airline.model.cabins;
 
 import com.everest.airline.model.cabins.exceptions.FLightAccommodationException;
 
-public abstract class Cabin {
+public class Cabin {
 
     private final int capacity;
     private int occupiedSeats;
     private double baseFare;
+    private final CabinType cabinType;
 
-    public Cabin(int capacity, int occupiedSeats, double baseFare) {
+    public Cabin(int capacity, int occupiedSeats, double baseFare,CabinType cabinType) {
         if (occupiedSeats <= capacity) {
             this.occupiedSeats = occupiedSeats;
             this.capacity = capacity;
             this.baseFare = baseFare;
+            this.cabinType=cabinType;
         } else throw new FLightAccommodationException("OccupiedSeats are greater than capacity of" + this.getClass());
     }
 
@@ -51,5 +53,9 @@ public abstract class Cabin {
         if (occupiedSeats + number <= capacity) {
             occupiedSeats += number;
         } else throw new FLightAccommodationException("Flight capacity exceeded for the " + this.getClass());
+    }
+
+    public CabinType getCabinType() {
+        return cabinType;
     }
 }

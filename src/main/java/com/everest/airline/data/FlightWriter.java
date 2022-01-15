@@ -11,18 +11,18 @@ import java.io.IOException;
 import java.util.Arrays;
 
 @Component
-public class DataWriter {
+public class FlightWriter {
 
     @Autowired
-    DataReader dataReader;
+    FlightReader FlightFileWriter;
 
-    public void writingToFiles(Flight flight, File file) throws IOException {
+    public void write(Flight flight, File file) throws IOException {
         FileWriter myWriter = new FileWriter(file);
         myWriter.write(flight.toString());
         myWriter.close();
     }
 
-    public File createFile(long number) throws IOException {
+    public File create(long number) throws IOException {
         File file1 = new File("src/main/java/com/everest/airline/data/flightsData/" + number + ".txt");
         if (file1.createNewFile()) {
             return file1;
@@ -31,7 +31,7 @@ public class DataWriter {
     }
 
     public long generateNUmber(){
-        File[] data = dataReader.getListOfFiles();
+        File[] data = FlightFileWriter.getAll();
         Arrays.sort(data);
         String name = data[data.length - 1].getName();
         long numberId = Long.parseLong(name.split("\\.")[0]);

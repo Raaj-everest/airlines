@@ -1,12 +1,10 @@
 package com.everest.airline.restControllers;
 
-import com.everest.airline.data.DataReader;
-import com.everest.airline.data.DataWriter;
+import com.everest.airline.data.FlightReader;
+import com.everest.airline.data.FlightWriter;
 import com.everest.airline.model.Flight;
 import com.everest.airline.model.cabins.Cabin;
-import com.everest.airline.model.cabins.types.BusinessClass;
-import com.everest.airline.model.cabins.types.EconomyClass;
-import com.everest.airline.model.cabins.types.FirstClass;
+import com.everest.airline.model.cabins.CabinType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,17 +19,17 @@ import java.util.List;
 public class FlightsRestController {
 
     @Autowired
-    private DataReader dataReader;
+    private FlightReader dataReader;
 
     @Autowired
-    private DataWriter dataWriter;
+    private FlightWriter dataWriter;
 
     @GetMapping("/flights")
     public List<Flight> getAllFlights() throws IOException {
         List<Flight> data = new ArrayList<>();
-        File[] files = dataReader.getListOfFiles();
+        File[] files = dataReader.getAll();
         for (File file : files) {
-            String flightData = dataReader.readFile(file);
+            String flightData = dataReader.read(file);
             Flight flight = dataReader.stringToFlight(flightData);
             data.add(flight);
         }
@@ -41,7 +39,7 @@ public class FlightsRestController {
     @GetMapping("/flights/{number}")
     public Flight getFlights(@PathVariable long number) throws IOException {
         File file = dataReader.getFile(String.valueOf(number));
-        String flightData = dataReader.readFile(file);
+        String flightData = dataReader.read(file);
         Flight flight = dataReader.stringToFlight(flightData);
         if (flight == null) {
             throw new FlightNotFoundException("No flight found with the resource you are entered");
@@ -50,22 +48,14 @@ public class FlightsRestController {
     }
 
     @PostMapping("/flights")
-    public long create(String number, String source, String destination, String departureDate, Integer economyClassCapacity, Integer firstClassCapacity, Integer businessClassCapacity, Integer occupiedEconomicSeats, Integer occupiedFirstClassSeats, Integer businessBusinessClassSeats, Integer economyClassBaseFare, Double firstClassBaseFare, Double businessClassBaseFare) throws IOException {
-        long numberId;
-        Cabin firstClass = new FirstClass(firstClassCapacity, occupiedFirstClassSeats, firstClassBaseFare);
-        Cabin businessClass = new BusinessClass(businessClassCapacity, businessBusinessClassSeats, businessClassBaseFare);
-        Cabin economyClass = new EconomyClass(economyClassCapacity, occupiedEconomicSeats, economyClassBaseFare);
-        if (number.isEmpty()) {
-            numberId = dataWriter.generateNUmber();
-            Flight flight = new Flight(numberId, source, destination, LocalDate.parse(departureDate), firstClass, businessClass, economyClass);
-            File file = dataWriter.createFile(numberId);
-            dataWriter.writingToFiles(flight, file);
-            return numberId;
-        }
-        System.out.println(number);
-        numberId = Long.parseLong(String.valueOf(number));
+    public long create(String source, String destination, String departureDate, Integer economyClassCapacity, Integer firstClassCapacity, Integer businessClassCapacity, Integer occupiedEconomicSeats, Integer occupiedFirstClassSeats, Integer businessBusinessClassSeats, Integer economyClassBaseFare, Double firstClassBaseFare, Double businessClassBaseFare) throws IOException {
+        Cabin firstClass = new Cabin(firstClassCapacity, occupiedFirstClassSeats, firstClassBaseFare, CabinType.FIRST);
+        Cabin businessClass = new Cabin(businessClassCapacity, businessBusinessClassSeats, businessClassBaseFare, CabinType.BUSINESS);
+        Cabin economyClass = new Cabin(economyClassCapacity, occupiedEconomicSeats, economyClassBaseFare, CabinType.ECONOMIC);
+        long numberId = dataWriter.generateNUmber();
         Flight flight = new Flight(numberId, source, destination, LocalDate.parse(departureDate), firstClass, businessClass, economyClass);
-        dataWriter.writingToFiles(flight, dataReader.getFile(String.valueOf(numberId)));
+        File file = dataWriter.create(numberId);
+        dataWriter.write(flight, file);
         return numberId;
     }
 
@@ -77,5 +67,17 @@ public class FlightsRestController {
             return ("Flight : " + number + " deleted successfully");
         }
         throw new FlightNotFoundException("Unable to locate the flight to delete");
+    }
+
+    @PutMapping("/flights")
+    public long create(String number, String source, String destination, String departureDate, Integer economyClassCapacity, Integer firstClassCapacity, Integer businessClassCapacity, Integer occupiedEconomicSeats, Integer occupiedFirstClassSeats, Integer businessBusinessClassSeats, Integer economyClassBaseFare, Double firstClassBaseFare, Double businessClassBaseFare) throws IOException {
+        long numberId;
+        Cabin firstClass = new Cabin(firstClassCapacity, occupiedFirstClassSeats, firstClassBaseFare, CabinType.FIRST);
+        Cabin businessClass = new Cabin(businessClassCapacity, businessBusinessClassSeats, businessClassBaseFare, CabinType.BUSINESS);
+        Cabin economyClass = new Cabin(economyClassCapacity, occupiedEconomicSeats, economyClassBaseFare, CabinType.ECONOMIC);
+        numberId = Long.parseLong(String.valueOf(number));
+        Flight flight = new Flight(numberId, source, destination, LocalDate.parse(departureDate), firstClass, businessClass, economyClass);
+        dataWriter.write(flight, dataReader.getFile(String.valueOf(numberId)));
+        return numberId;
     }
 }
