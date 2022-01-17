@@ -35,3 +35,10 @@ out/
 
 ### VS Code ###
 .vscode/
+
+gradlew.bat
+gradlew
+build.gradle
+settings.gradle
+.DS_Store
+
