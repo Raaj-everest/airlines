@@ -1,11 +1,10 @@
 package com.everest.airline;
 
-import com.everest.airline.data.FlightReader;
+import com.everest.airline.services.dataHandlers.FlightReader;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Paths;
 

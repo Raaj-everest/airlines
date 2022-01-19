@@ -1,6 +1,6 @@
-package com.everest.airline.data;
+package com.everest.airline.services.dataHandlers;
 
-import com.everest.airline.data.exceptions.FolderNotFoundException;
+import com.everest.airline.services.dataHandlers.exceptions.FolderNotFoundException;
 import com.everest.airline.model.cabins.CabinType;
 import com.everest.airline.model.Flight;
 import com.everest.airline.model.cabins.Cabin;

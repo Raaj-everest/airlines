@@ -1,6 +1,6 @@
-package com.everest.airline.data;
+package com.everest.airline.services.dataHandlers;
 
-import com.everest.airline.data.exceptions.FileNotCreatedException;
+import com.everest.airline.services.dataHandlers.exceptions.FileNotCreatedException;
 import com.everest.airline.model.Flight;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

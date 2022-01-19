@@ -1,7 +1,7 @@
 package com.everest.airline.controllers;
 
-import com.everest.airline.data.FlightReader;
-import com.everest.airline.data.FlightWriter;
+import com.everest.airline.services.dataHandlers.FlightReader;
+import com.everest.airline.services.dataHandlers.FlightWriter;
 import com.everest.airline.model.cabins.CabinType;
 import com.everest.airline.model.Flight;
 import org.springframework.beans.factory.annotation.Autowired;

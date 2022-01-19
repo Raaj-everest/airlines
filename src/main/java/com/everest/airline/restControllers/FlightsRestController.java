@@ -1,7 +1,7 @@
 package com.everest.airline.restControllers;
 
-import com.everest.airline.data.FlightReader;
-import com.everest.airline.data.FlightWriter;
+import com.everest.airline.services.dataHandlers.FlightReader;
+import com.everest.airline.services.dataHandlers.FlightWriter;
 import com.everest.airline.model.Flight;
 import com.everest.airline.model.cabins.Cabin;
 import com.everest.airline.model.cabins.CabinType;
