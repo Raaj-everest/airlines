@@ -22,10 +22,10 @@ import java.util.stream.Collectors;
 public class SearchController {
 
     @Autowired
-    FlightReader dataReader;
+    FlightReader flightReader;
 
     @Autowired
-    FlightWriter dataWriter;
+    FlightWriter flightWriter;
 
     private String from;
     private String to;
@@ -36,14 +36,16 @@ public class SearchController {
 
     @RequestMapping(value = "/search")
     public String search(String from, String to, String departureDate, String numberOfPassengersBoarding, String classType, Model model) throws IOException {
+        System.out.println(from+to+departureDate+numberOfPassengersBoarding+classType);
         if (from != null) {
             setValues(from, to, departureDate, numberOfPassengersBoarding, classType);
         }
+
         List<Flight> data = new ArrayList<>();
-            File[] files = dataReader.getAll();
+            File[] files = flightReader.getAll();
             for (File file : files) {
-                String flightData = dataReader.read(file);
-                Flight flight = dataReader.stringToFlight(flightData);
+                String flightData = flightReader.read(file);
+                Flight flight = flightReader.stringToFlight(flightData);
                 data.add(flight);
             }
             List<Flight> searchedFlights = data.stream()
@@ -59,11 +61,11 @@ public class SearchController {
 
     @RequestMapping(value = "/{number}")
     public String book(@PathVariable("number") String number, Model model) throws IOException {
-        File file = dataReader.getFile(String.valueOf(number));
-        String flightData = dataReader.read(file);
-        Flight flight = dataReader.stringToFlight(flightData);
+        File file = flightReader.getFile(number);
+        String flightData = flightReader.read(file);
+        Flight flight = flightReader.stringToFlight(flightData);
         flight.updateOccupiedSeats(classType, numberOfPassengersBoarding);
-        dataWriter.write(flight,file);
+        flightWriter.write(flight,file);
         return "confirmed";
     }
 

@@ -2,6 +2,8 @@ package com.everest.airline.model;
 
 import com.everest.airline.model.cabins.Cabin;
 import com.everest.airline.model.cabins.CabinType;
+import com.everest.airline.services.tickets.TicketCalculator;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
 
@@ -15,7 +17,7 @@ public class Flight {
     private final LocalDate departureDate;
 
 
-    public Flight(long number, String source, String destination, LocalDate departureDate, Cabin firstClass,Cabin businessClass,Cabin economyClass) {
+    public Flight(long number, String source, String destination, LocalDate departureDate, Cabin firstClass, Cabin businessClass, Cabin economyClass) {
         this.number = number;
         this.source = source;
         this.destination = destination;
@@ -80,7 +82,7 @@ public class Flight {
     }
 
 
-    private Cabin cabinSelector(CabinType cabinType) {
+    public Cabin cabinSelector(CabinType cabinType) {
         switch (cabinType) {
             case FIRST:
                 return firstClass;
@@ -105,40 +107,8 @@ public class Flight {
     }
 
     public double getTicketPrice(CabinType type) {
-        LocalDate now = LocalDate.now();
-        int differenceInDays = Math.abs(now.compareTo(departureDate));
-        if (differenceInDays > 15) {
-            return (int) cabinSelector(type).getBaseFare();
-        } else {
-            return calculateFare(type, differenceInDays);
-        }
-    }
-
-    private int calculateFare(CabinType type, int differenceInDays) {
-        double currentFare;
-        double fare = cabinSelector(type).getBaseFare();
-        if (differenceInDays > 3) {
-            for (int i = 1; i <= (15 - differenceInDays); i++) {
-                currentFare = fare + (fare * 2 / 100);
-                fare = currentFare;
-            }
-            return (int) fare;
-        }
-        if (differenceInDays > 0) {
-            for (int i = 1; i <= (12); i++) {
-                currentFare = fare + (fare * 2 / 100);
-                fare = currentFare;
-            }
-            for (int i = 1; i <= 3; i++) {
-                currentFare = fare + (fare * 10 / 100);
-                fare = currentFare;
-            }
-            return (int) fare;
-        }
-        return -1;
-    }
-    public void updateTicketPrice(CabinType type, int percentage) {
-        cabinSelector(type).updateFare(percentage);
+        TicketCalculator tc = new TicketCalculator();
+        return tc.price(this.departureDate, cabinSelector(type));
     }
 
 }

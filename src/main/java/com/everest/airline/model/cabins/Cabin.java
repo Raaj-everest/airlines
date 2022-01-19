@@ -5,36 +5,17 @@ import com.everest.airline.model.cabins.exceptions.FLightAccommodationException;
 public class Cabin {
 
     private final int capacity;
+    private final CabinType cabinType;
     private int occupiedSeats;
     private double baseFare;
-    private final CabinType cabinType;
 
-    public Cabin(int capacity, int occupiedSeats, double baseFare,CabinType cabinType) {
+    public Cabin(int capacity, int occupiedSeats, double baseFare, CabinType cabinType) {
         if (occupiedSeats <= capacity) {
             this.occupiedSeats = occupiedSeats;
             this.capacity = capacity;
             this.baseFare = baseFare;
-            this.cabinType=cabinType;
+            this.cabinType = cabinType;
         } else throw new FLightAccommodationException("OccupiedSeats are greater than capacity of" + this.getClass());
-    }
-
-    public void updateFare(int percentage) {
-        this.baseFare += (this.baseFare * percentage) / 100;
-
-    }
-
-    public double ticketCost() {
-        int percentage = ((capacity - occupiedSeats) * 100) / capacity;
-        if (percentage >= 70) {
-            return (this.baseFare + (this.baseFare * 0 / 100));
-        } else if (percentage >= 50) {
-            return (this.baseFare + (this.baseFare * 20 / 100));
-        } else if (percentage >= 25) {
-            return (this.baseFare + (this.baseFare * 35 / 100));
-        } else if (percentage >= 0) {
-            return (this.baseFare + (this.baseFare * 50 / 100));
-        }
-        throw new FLightAccommodationException("Error while cabin calculating ticketCost for" + this.getClass());
     }
 
     public int getCapacity() {
