@@ -1,9 +1,12 @@
 package com.everest.airline.restControllers;
 
+import com.everest.airline.model.Flight;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
+import java.util.List;
 
 
 @RestController
@@ -12,16 +15,14 @@ public class FlightsRestController {
     @Autowired
     private U u;
 
-//    @GetMapping("/flights")
-//    public List<Flight> getAllFlights() throws IOException {
-//        return jdbcTemplate.query(" select number,source,destination,departuredate," +
-//                "a.occupiedSeats,a.Capacity,a.basefare," +
-//                "b.occupiedSeats,b.Capacity,b.basefare," +
-//                "c.occupiedSeats,c.Capacity,c.basefare from flight" +
-//                " left join cabin a on flight.firstclass=a.id " +
-//                "left join cabin b on flight.businessclass=b.id" +
-//                " left join cabin c  on flight.economicclass=c.id;", new FlightRowMapper());
-//    }
+    @Autowired
+    NamedParameterJdbcTemplate jdbcTemplate;
+
+    @GetMapping("/flights/{number}")
+    public Flight getFlight(@PathVariable long number) throws IOException {
+//        System.out.println(number);
+        return u.getFlight(number);
+    }
 
     //    @GetMapping("/flights/{number}")
 //    public List<Flight> getFlights(@PathVariable long number) throws IOException {
