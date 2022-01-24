@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 @Component
-public class U {
+public class dataManager {
     @Autowired
     NamedParameterJdbcTemplate jdbcTemplate;
 
@@ -60,12 +60,12 @@ public class U {
     }
 
     public Flight getFlight(Long number) {
-        Map<String,Integer> map = new HashMap();
+        Map<String, Integer> map = new HashMap<>();
         map.put("flight_number", number.intValue());
         System.out.println(map.get("flight_number"));
         List<Cabin> cabins = jdbcTemplate.query("select cabin.* from flight_cabin inner join cabin on flight_cabin.cabin_id=cabin.id where flight_cabin.flight_number =:flight_number", map, new CabinCreator());
-        List<ArrayList> flightData = jdbcTemplate.query("select * from flight where number=:flight_number",map, new FlightDataMapper());
-        return new Flight((long)flightData.get(0).get(0),(String) flightData.get(0).get(1),(String) flightData.get(0).get(2),(LocalDate) flightData.get(0).get(3),cabins.get(0),cabins.get(1),cabins.get(2));
+        List<ArrayList> flightData = jdbcTemplate.query("select * from flight where number=:flight_number", map, new FlightDataMapper());
+        return new Flight((long) flightData.get(0).get(0), (String) flightData.get(0).get(1), (String) flightData.get(0).get(2), (LocalDate) flightData.get(0).get(3), cabins.get(0), cabins.get(1), cabins.get(2));
     }
 
     private SqlParameterSource flightMapper(Flight flight) {
@@ -102,5 +102,21 @@ public class U {
                 .addValue("baseFare", cabin.getBaseFare())
                 .addValue("type", cabin.getCabinType().toString())
                 .addValue("id", number);
+    }
+
+    public String remove(long number) {
+        Map<String, Long> mapper = new HashMap<String, Long>();
+        mapper.put("flight_number", number);
+        List<Long> id = jdbcTemplate.query("select cabin_id from flight_cabin where flight_number=:flight_number", mapper, new FlightCabinIDMapper());
+        mapper.put("first_class", id.get(0));
+        mapper.put("business_class", id.get(1));
+        mapper.put("economic_class", id.get(2));
+        jdbcTemplate.update("delete from flight where number=:flight_number", mapper);
+        jdbcTemplate.update("delete from cabin where id=:first_class",mapper);
+        jdbcTemplate.update("delete from cabin where id=:business_class",mapper);
+        jdbcTemplate.update("delete from cabin where id=:economic_class",mapper);
+        jdbcTemplate.update("delete from flight_cabin where flight_number=:flight_number",mapper);
+        return "flight with ID : "+number+ " deleted successfully";
+
     }
 }
