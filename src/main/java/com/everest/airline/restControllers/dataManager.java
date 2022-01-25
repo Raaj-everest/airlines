@@ -3,12 +3,20 @@ package com.everest.airline.restControllers;
 import com.everest.airline.model.Flight;
 import com.everest.airline.model.cabins.Cabin;
 import com.everest.airline.model.cabins.CabinType;
+import com.everest.airline.restControllers.mappers.CabinCreator;
+import com.everest.airline.restControllers.mappers.CabinIDMapper;
+import com.everest.airline.restControllers.mappers.FlightDataMapper;
+import com.everest.airline.restControllers.mappers.FlightNumberMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Component;
 
+import javax.transaction.Transactional;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,52 +28,65 @@ public class dataManager {
     @Autowired
     NamedParameterJdbcTemplate jdbcTemplate;
 
-    public long write(String source, String destination, String departureDate, Integer economyClassCapacity, Integer firstClassCapacity, Integer businessClassCapacity, Integer occupiedEconomicSeats, Integer occupiedFirstClassSeats, Integer occupiedBusinessClassSeats, Integer economyClassBaseFare, Double firstClassBaseFare, Double businessClassBaseFare) {
-        List<Integer> flightNumber = jdbcTemplate.query("select number from flight order by number desc limit 1", new FlightNumberMapper());
-        long flightID = (flightNumber.get(0) + 1);
+    @Transactional
+    public String write(String source, String destination, String departureDate, Integer economyClassCapacity, Integer firstClassCapacity, Integer businessClassCapacity, Integer occupiedEconomicSeats, Integer occupiedFirstClassSeats, Integer occupiedBusinessClassSeats, Integer economyClassBaseFare, Double firstClassBaseFare, Double businessClassBaseFare) {
         Cabin firstClass = new Cabin(firstClassCapacity, occupiedFirstClassSeats, firstClassBaseFare, CabinType.FIRST);
         Cabin businessClass = new Cabin(businessClassCapacity, occupiedBusinessClassSeats, businessClassBaseFare, CabinType.BUSINESS);
         Cabin economyClass = new Cabin(economyClassCapacity, occupiedEconomicSeats, economyClassBaseFare, CabinType.ECONOMIC);
-        Flight flight = new Flight(flightID, source, destination, LocalDate.parse(departureDate), firstClass, businessClass, economyClass);
         jdbcTemplate.update("insert into cabin (capacity,occupied,available,fare,type) values(:capacity,:occupiedSeats,:availableSeats,:baseFare,:type)", cabinMapper(firstClass));
         jdbcTemplate.update("insert into cabin (capacity,occupied,available,fare,type) values(:capacity,:occupiedSeats,:availableSeats,:baseFare,:type)", cabinMapper(businessClass));
         jdbcTemplate.update("insert into cabin (capacity,occupied,available,fare,type) values(:capacity,:occupiedSeats,:availableSeats,:baseFare,:type)", cabinMapper(economyClass));
-        jdbcTemplate.update("insert into flight (number,source,destination,departureDate) values(:number,:source,:destination,:departureDate)", flightMapper(flight));
-        List<Long> id = jdbcTemplate.query("select id from cabin order by id desc limit 3", new cabinIDMapper());
-        HashMap<String, Long> relation = new HashMap<>();
-        relation.put("firstClass_id", id.get(2));
-        relation.put("businessClass_id", id.get(1));
-        relation.put("economyClass_id", id.get(0));
-        relation.put("flight_number", flightID);
-        jdbcTemplate.update("insert into flight_cabin (flight_number,cabin_id) values(:flight_number,:firstClass_id)", relation);
-        jdbcTemplate.update("insert into flight_cabin (flight_number,cabin_id) values(:flight_number,:businessClass_id)", relation);
-        jdbcTemplate.update("insert into flight_cabin (flight_number,cabin_id) values(:flight_number,:economyClass_id)", relation);
-        return flightID;
+        List<Long> id = jdbcTemplate.query("select id from cabin order by id desc limit 3", new CabinIDMapper());
+        SqlParameterSource relation = new MapSqlParameterSource()
+                .addValue("source", source)
+                .addValue("destination", destination)
+                .addValue("departureDate", departureDate)
+                .addValue("firstClass_id", id.get(2))
+                .addValue("businessClass_id", id.get(1))
+                .addValue("economyClass_id", id.get(0));
+        jdbcTemplate.update("insert into flight (source,destination,departureDate,first_class,business_class,economic_class) values(:source,:destination,:departureDate,:firstClass_id,:businessClass_id,:economyClass_id)", relation);
+        List<Long> flightID = jdbcTemplate.query("select number from flight order by number desc limit 1", new FlightNumberMapper());
+        return "flight with ID : " + flightID.get(0) + " created successfully";
     }
 
+    @Transactional
     public String update(String number, String source, String destination, String departureDate, Integer economyClassCapacity, Integer firstClassCapacity, Integer businessClassCapacity, Integer occupiedEconomicSeats, Integer occupiedFirstClassSeats, Integer occupiedBusinessClassSeats, Integer economyClassBaseFare, Double firstClassBaseFare, Double businessClassBaseFare) {
         Cabin firstClass = new Cabin(firstClassCapacity, occupiedFirstClassSeats, firstClassBaseFare, CabinType.FIRST);
         Cabin businessClass = new Cabin(businessClassCapacity, occupiedBusinessClassSeats, businessClassBaseFare, CabinType.BUSINESS);
         Cabin economyClass = new Cabin(economyClassCapacity, occupiedEconomicSeats, economyClassBaseFare, CabinType.ECONOMIC);
         long flightID = Long.parseLong(number);
+        Flight flight = new Flight(flightID, source, destination, LocalDate.parse(departureDate), firstClass, businessClass, economyClass);
         Map<String, Long> map = new HashMap<>();
         map.put("flightID", flightID);
-        List<Long> id = jdbcTemplate.query("select cabin_id from flight_cabin where flight_number =:flightID ", map, new FlightCabinIDMapper());
-        Flight flight = new Flight(flightID, source, destination, LocalDate.parse(departureDate), firstClass, businessClass, economyClass);
-        jdbcTemplate.update("update cabin set capacity=:capacity,occupied=:occupiedSeats,available=:availableSeats,fare=:baseFare,type=:type where id=:id", cabinMapper(firstClass, id.get(2)));
+        List<Long> id = jdbcTemplate.query("select first_class,business_class,economic_class from flight where number=:flightID ", map, new RowMapper<List<Long>>() {
+            @Override
+            public List<Long> mapRow(ResultSet rs, int rowNum) throws SQLException {
+                List<Long> arr = new ArrayList<>();
+                arr.add(rs.getLong("first_class"));
+                arr.add(rs.getLong("business_class"));
+                arr.add(rs.getLong("economic_class"));
+                return arr;
+            }
+        }).get(0);
+        jdbcTemplate.update("update cabin set capacity=:capacity,occupied=:occupiedSeats,available=:availableSeats,fare=:baseFare,type=:type where id=:id", cabinMapper(firstClass, id.get(0)));
         jdbcTemplate.update("update cabin set capacity=:capacity,occupied=:occupiedSeats,available=:availableSeats,fare=:baseFare,type=:type where id=:id", cabinMapper(businessClass, id.get(1)));
-        jdbcTemplate.update("update cabin set capacity=:capacity,occupied=:occupiedSeats,available=:availableSeats,fare=:baseFare,type=:type where id=:id", cabinMapper(economyClass, id.get(0)));
-        jdbcTemplate.update("update flight set number=:number,source=:source,destination=:destination,departureDate=:departureDate where number=:number", flightMapper(flight, flightID));
+        jdbcTemplate.update("update cabin set capacity=:capacity,occupied=:occupiedSeats,available=:availableSeats,fare=:baseFare,type=:type where id=:id", cabinMapper(economyClass, id.get(2)));
+        SqlParameterSource relation = new MapSqlParameterSource()
+                .addValue("number", flightID)
+                .addValue("source", source)
+                .addValue("destination", destination)
+                .addValue("departureDate", departureDate)
+                .addValue("firstClass_id", id.get(0))
+                .addValue("businessClass_id", id.get(1))
+                .addValue("economyClass_id", id.get(2));
+        jdbcTemplate.update("update flight set source=:source,destination=:destination,departureDate=:departureDate,first_class=:firstClass_id,business_class=:businessClass_id,economic_class=:economyClass_id where number=:number", relation);
         return "updated flight with id : " + number + " successfully";
     }
 
     public Flight getFlight(Long number) {
         Map<String, Integer> map = new HashMap<>();
         map.put("flight_number", number.intValue());
-        System.out.println(map.get("flight_number"));
-        List<Cabin> cabins = jdbcTemplate.query("select cabin.* from flight_cabin inner join cabin on flight_cabin.cabin_id=cabin.id where flight_cabin.flight_number =:flight_number", map, new CabinCreator());
-        List<ArrayList> flightData = jdbcTemplate.query("select * from flight where number=:flight_number", map, new FlightDataMapper());
-        return new Flight((long) flightData.get(0).get(0), (String) flightData.get(0).get(1), (String) flightData.get(0).get(2), (LocalDate) flightData.get(0).get(3), cabins.get(0), cabins.get(1), cabins.get(2));
+        return jdbcTemplate.query("select number,source,destination,departureDate,cf.*,cb.*,ce.* from flight inner join cabin cf on flight.first_class=cf.id inner join cabin cb on flight.business_class=cb.id  inner join cabin ce on flight.economic_class=ce.id where number=:flight_number",map,new FlightRowMappper()).get(0);
     }
 
     private SqlParameterSource flightMapper(Flight flight) {
@@ -81,8 +102,7 @@ public class dataManager {
                 .addValue("number", flight.getNumber())
                 .addValue("source", flight.getSource())
                 .addValue("destination", flight.getDestination())
-                .addValue("departureDate", flight.getDepartureDate())
-                .addValue("number", number);
+                .addValue("departureDate", flight.getDepartureDate());
     }
 
     private SqlParameterSource cabinMapper(Cabin cabin) {
@@ -104,19 +124,32 @@ public class dataManager {
                 .addValue("id", number);
     }
 
+    @Transactional
     public String remove(long number) {
         Map<String, Long> mapper = new HashMap<String, Long>();
         mapper.put("flight_number", number);
-        List<Long> id = jdbcTemplate.query("select cabin_id from flight_cabin where flight_number=:flight_number", mapper, new FlightCabinIDMapper());
+        List<Long> id = jdbcTemplate.query("select first_class,business_class,economic_class from flight where number=:flight_number ", mapper, new RowMapper<List<Long>>() {
+            @Override
+            public List<Long> mapRow(ResultSet rs, int rowNum) throws SQLException {
+                List<Long> arr = new ArrayList<>();
+                arr.add(rs.getLong("first_class"));
+                arr.add(rs.getLong("business_class"));
+                arr.add(rs.getLong("economic_class"));
+                return arr;
+            }
+        }).get(0);
         mapper.put("first_class", id.get(0));
         mapper.put("business_class", id.get(1));
         mapper.put("economic_class", id.get(2));
         jdbcTemplate.update("delete from flight where number=:flight_number", mapper);
-        jdbcTemplate.update("delete from cabin where id=:first_class",mapper);
-        jdbcTemplate.update("delete from cabin where id=:business_class",mapper);
-        jdbcTemplate.update("delete from cabin where id=:economic_class",mapper);
-        jdbcTemplate.update("delete from flight_cabin where flight_number=:flight_number",mapper);
-        return "flight with ID : "+number+ " deleted successfully";
+        jdbcTemplate.update("delete from cabin where id=:first_class", mapper);
+        jdbcTemplate.update("delete from cabin where id=:business_class", mapper);
+        jdbcTemplate.update("delete from cabin where id=:economic_class", mapper);
+        return "flight with ID : " + number + " deleted successfully";
 
+    }
+
+    public List<Flight> getAll() {
+        return jdbcTemplate.query("select number,source,destination,departureDate,cf.*,cb.*,ce.* from flight inner join cabin cf on flight.first_class=cf.id inner join cabin cb on flight.business_class=cb.id  inner join cabin ce on flight.economic_class=ce.id",new FlightRowMappper());
     }
 }

@@ -11,10 +11,11 @@ public class Flight {
     private final long number;
     private final String source;
     private final String destination;
+    private final LocalDate departureDate;
     private final Cabin firstClass;
     private final Cabin businessClass;
     private final Cabin economyClass;
-    private final LocalDate departureDate;
+
 
 
     public Flight(long number, String source, String destination, LocalDate departureDate, Cabin firstClass, Cabin businessClass, Cabin economyClass) {
