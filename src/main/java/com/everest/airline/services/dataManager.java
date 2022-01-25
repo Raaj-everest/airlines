@@ -1,12 +1,10 @@
-package com.everest.airline.restControllers;
+package com.everest.airline.services;
 
 import com.everest.airline.model.Flight;
 import com.everest.airline.model.cabins.Cabin;
 import com.everest.airline.model.cabins.CabinType;
-import com.everest.airline.restControllers.mappers.CabinCreator;
-import com.everest.airline.restControllers.mappers.CabinIDMapper;
-import com.everest.airline.restControllers.mappers.FlightDataMapper;
-import com.everest.airline.restControllers.mappers.FlightNumberMapper;
+import com.everest.airline.restControllers.FlightNotFoundException;
+import com.everest.airline.restControllers.mappers.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -17,7 +15,6 @@ import org.springframework.stereotype.Component;
 import javax.transaction.Transactional;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -50,14 +47,17 @@ public class dataManager {
     }
 
     @Transactional
-    public String update(String number, String source, String destination, String departureDate, Integer economyClassCapacity, Integer firstClassCapacity, Integer businessClassCapacity, Integer occupiedEconomicSeats, Integer occupiedFirstClassSeats, Integer occupiedBusinessClassSeats, Integer economyClassBaseFare, Double firstClassBaseFare, Double businessClassBaseFare) {
+    public String update(long number, String source, String destination, String departureDate, Integer economyClassCapacity, Integer firstClassCapacity, Integer businessClassCapacity, Integer occupiedEconomicSeats, Integer occupiedFirstClassSeats, Integer occupiedBusinessClassSeats, Integer economyClassBaseFare, Double firstClassBaseFare, Double businessClassBaseFare) {
         Cabin firstClass = new Cabin(firstClassCapacity, occupiedFirstClassSeats, firstClassBaseFare, CabinType.FIRST);
         Cabin businessClass = new Cabin(businessClassCapacity, occupiedBusinessClassSeats, businessClassBaseFare, CabinType.BUSINESS);
         Cabin economyClass = new Cabin(economyClassCapacity, occupiedEconomicSeats, economyClassBaseFare, CabinType.ECONOMIC);
-        long flightID = Long.parseLong(number);
-        Flight flight = new Flight(flightID, source, destination, LocalDate.parse(departureDate), firstClass, businessClass, economyClass);
+        long flightID = number;
         Map<String, Long> map = new HashMap<>();
         map.put("flightID", flightID);
+       List<Long> flightIDConfirmation = jdbcTemplate.query("select number from flight where number=:flightID",map,new FlightNumberMapper());
+        if(flightIDConfirmation.isEmpty()){
+            throw new FlightNotFoundException("There is no flight assosiated with the Id :"+flightID);
+        }
         List<Long> id = jdbcTemplate.query("select first_class,business_class,economic_class from flight where number=:flightID ", map, new RowMapper<List<Long>>() {
             @Override
             public List<Long> mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -80,7 +80,7 @@ public class dataManager {
                 .addValue("businessClass_id", id.get(1))
                 .addValue("economyClass_id", id.get(2));
         jdbcTemplate.update("update flight set source=:source,destination=:destination,departureDate=:departureDate,first_class=:firstClass_id,business_class=:businessClass_id,economic_class=:economyClass_id where number=:number", relation);
-        return "updated flight with id : " + number + " successfully";
+        return "flight with id : " + number + " updated successfully";
     }
 
     public Flight getFlight(Long number) {

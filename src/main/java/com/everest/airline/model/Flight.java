@@ -3,7 +3,6 @@ package com.everest.airline.model;
 import com.everest.airline.model.cabins.Cabin;
 import com.everest.airline.model.cabins.CabinType;
 import com.everest.airline.services.tickets.TicketCalculator;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
 
@@ -15,7 +14,6 @@ public class Flight {
     private final Cabin firstClass;
     private final Cabin businessClass;
     private final Cabin economyClass;
-
 
 
     public Flight(long number, String source, String destination, LocalDate departureDate, Cabin firstClass, Cabin businessClass, Cabin economyClass) {
@@ -70,7 +68,7 @@ public class Flight {
     }
 
     public int getAvailableSeats(CabinType type) {
-        return getCapacity(type) - getOccupiedSeats(type);
+        return cabinSelector(type).getAvailableSeats();
     }
 
     public boolean checkAvailability(CabinType type, int numberOfPassengers) {

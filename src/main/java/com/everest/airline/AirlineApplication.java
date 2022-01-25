@@ -14,10 +14,6 @@ public class AirlineApplication {
 
     public static void main(String[] args) throws IOException {
         SpringApplication.run(AirlineApplication.class, args);
-        FlightReader f = new FlightReader();
-        File F =Paths.get("src/main/java/com/everest/airline/data/flightsData/1001.txt").toFile();
-        File g = f.getFile("1001");
-        System.out.println(f.read(g));
     }
 
 }

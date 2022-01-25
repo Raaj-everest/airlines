@@ -30,6 +30,10 @@ public class Cabin {
         return baseFare;
     }
 
+    public int getAvailableSeats(){
+        return capacity-occupiedSeats;
+    }
+
     public void updateOccupiedSeats(int number) {
         if (occupiedSeats + number <= capacity) {
             occupiedSeats += number;

@@ -1,4 +1,4 @@
-package com.everest.airline.restControllers;
+package com.everest.airline.restControllers.mappers;
 
 import com.everest.airline.model.Flight;
 import com.everest.airline.model.cabins.Cabin;
