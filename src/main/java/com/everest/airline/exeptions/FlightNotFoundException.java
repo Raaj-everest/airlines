@@ -1,4 +1,4 @@
-package com.everest.airline.restControllers;
+package com.everest.airline.exeptions;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;

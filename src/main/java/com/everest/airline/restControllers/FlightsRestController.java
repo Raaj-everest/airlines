@@ -1,11 +1,14 @@
 package com.everest.airline.restControllers;
 
 import com.everest.airline.model.Flight;
-import com.everest.airline.services.dataManager;
+import com.everest.airline.model.cabins.Cabin;
+import com.everest.airline.model.cabins.CabinType;
+import com.everest.airline.repositories.FlightRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.List;
 
 
@@ -13,7 +16,8 @@ import java.util.List;
 public class FlightsRestController {
 
     @Autowired
-    private dataManager manager;
+    private FlightRepository manager;
+
 
     @GetMapping("/flights/{number}")
     public Flight getFlight(@PathVariable long number) throws IOException {
@@ -21,7 +25,7 @@ public class FlightsRestController {
     }
 
     @GetMapping("/flights")
-    public List<Flight> getFlight() throws IOException {
+    public List<Flight> getFlight() {
         return manager.getAll();
     }
 
@@ -38,10 +42,11 @@ public class FlightsRestController {
                          Integer economyClassBaseFare,
                          Double firstClassBaseFare,
                          Double businessClassBaseFare) {
-        return manager.write(source, destination, departureDate,
-                economyClassCapacity, firstClassCapacity, businessClassCapacity,
-                occupiedEconomicSeats, occupiedFirstClassSeats, occupiedBusinessClassSeats,
-                economyClassBaseFare, firstClassBaseFare, businessClassBaseFare);
+        Cabin firstClass = new Cabin(firstClassCapacity, occupiedFirstClassSeats, firstClassBaseFare, CabinType.FIRST);
+        Cabin businessClass = new Cabin(businessClassCapacity, occupiedBusinessClassSeats, businessClassBaseFare, CabinType.BUSINESS);
+        Cabin economicClass = new Cabin(economyClassCapacity, occupiedEconomicSeats, economyClassBaseFare, CabinType.ECONOMIC);
+        long temporaryID = 0;
+        return manager.write(new Flight(temporaryID, source, destination, LocalDate.parse(departureDate), firstClass, businessClass, economicClass));
     }
 
     @PostMapping("/flights/{number}")
@@ -58,10 +63,10 @@ public class FlightsRestController {
                          Integer economyClassBaseFare,
                          Double firstClassBaseFare,
                          Double businessClassBaseFare) {
-        return manager.update(number, source, destination, departureDate,
-                economyClassCapacity, firstClassCapacity, businessClassCapacity,
-                occupiedEconomicSeats, occupiedFirstClassSeats, occupiedBusinessClassSeats,
-                economyClassBaseFare, firstClassBaseFare, businessClassBaseFare);
+        Cabin firstClass = new Cabin(firstClassCapacity, occupiedFirstClassSeats, firstClassBaseFare, CabinType.FIRST);
+        Cabin businessClass = new Cabin(businessClassCapacity, occupiedBusinessClassSeats, businessClassBaseFare, CabinType.BUSINESS);
+        Cabin economicClass = new Cabin(economyClassCapacity, occupiedEconomicSeats, economyClassBaseFare, CabinType.ECONOMIC);
+        return manager.update(new Flight(number, source, destination, LocalDate.parse(departureDate), firstClass, businessClass, economicClass));
     }
 
     @DeleteMapping("/flights/{number}")

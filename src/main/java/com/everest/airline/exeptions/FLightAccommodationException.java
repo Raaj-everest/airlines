@@ -1,4 +1,4 @@
-package com.everest.airline.model.cabins.exceptions;
+package com.everest.airline.exeptions;
 
 public class FLightAccommodationException extends RuntimeException {
     public FLightAccommodationException(String message) {

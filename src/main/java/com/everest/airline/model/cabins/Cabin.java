@@ -1,6 +1,6 @@
 package com.everest.airline.model.cabins;
 
-import com.everest.airline.model.cabins.exceptions.FLightAccommodationException;
+import com.everest.airline.exeptions.FLightAccommodationException;
 
 public class Cabin {
 
@@ -30,8 +30,8 @@ public class Cabin {
         return baseFare;
     }
 
-    public int getAvailableSeats(){
-        return capacity-occupiedSeats;
+    public int getAvailableSeats() {
+        return capacity - occupiedSeats;
     }
 
     public void updateOccupiedSeats(int number) {

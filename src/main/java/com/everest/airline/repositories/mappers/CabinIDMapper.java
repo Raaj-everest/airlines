@@ -1,4 +1,4 @@
-package com.everest.airline.restControllers.mappers;
+package com.everest.airline.repositories.mappers;
 
 import org.springframework.jdbc.core.RowMapper;
 

@@ -1,7 +1,8 @@
 package com.everest.airline.services.tickets;
 
+import com.everest.airline.exeptions.FLightAccommodationException;
+import com.everest.airline.exeptions.TicketCalculationException;
 import com.everest.airline.model.cabins.Cabin;
-import com.everest.airline.model.cabins.exceptions.FLightAccommodationException;
 
 import java.time.LocalDate;
 
@@ -51,6 +52,6 @@ public class TicketCalculator {
             }
             return (int) fare;
         }
-        throw new TicketCalculationError("Error while calculating ticket cost");
+        throw new TicketCalculationException("Error while calculating ticket cost");
     }
 }
